@@ -1,0 +1,83 @@
+﻿Build started 4/11/2015 4:15:44 PM.
+     1>Project "C:\Users\James\Documents\Visual Studio 2013\Projects\TMSConsole\TMSConsole\TMSConsole.vcxproj" on node 2 (Build target(s)).
+     1>ClCompile:
+         C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\CL.exe /c /I"C:\armadillo-4.600.4\include" /ZI /nologo /W3 /WX- /Od /Oy- /D WIN32 /D _DEBUG /D _CONSOLE /D _LIB /D _UNICODE /D UNICODE /Gm /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Fo"Debug\\" /Fd"Debug\vc120.pdb" /Gd /TP /analyze- /errorReport:prompt TMSConsole.cpp
+         TMSConsole.cpp
+     1>c:\program files (x86)\microsoft visual studio 12.0\vc\include\stdint.h(57): warning C4005: 'INT8_MIN' : macro redefinition
+                 c:\program files (x86)\national instruments\labview 2013\cintools\fundtypes.h(291) : see previous definition of 'INT8_MIN'
+     1>c:\program files (x86)\microsoft visual studio 12.0\vc\include\stdint.h(58): warning C4005: 'INT16_MIN' : macro redefinition
+                 c:\program files (x86)\national instruments\labview 2013\cintools\fundtypes.h(294) : see previous definition of 'INT16_MIN'
+     1>c:\program files (x86)\microsoft visual studio 12.0\vc\include\stdint.h(59): warning C4005: 'INT32_MIN' : macro redefinition
+                 c:\program files (x86)\national instruments\labview 2013\cintools\fundtypes.h(297) : see previous definition of 'INT32_MIN'
+     1>c:\program files (x86)\microsoft visual studio 12.0\vc\include\stdint.h(60): warning C4005: 'INT64_MIN' : macro redefinition
+                 c:\program files (x86)\national instruments\labview 2013\cintools\fundtypes.h(370) : see previous definition of 'INT64_MIN'
+     1>c:\program files (x86)\microsoft visual studio 12.0\vc\include\stdint.h(61): warning C4005: 'INT8_MAX' : macro redefinition
+                 c:\program files (x86)\national instruments\labview 2013\cintools\fundtypes.h(301) : see previous definition of 'INT8_MAX'
+     1>c:\program files (x86)\microsoft visual studio 12.0\vc\include\stdint.h(62): warning C4005: 'INT16_MAX' : macro redefinition
+                 c:\program files (x86)\national instruments\labview 2013\cintools\fundtypes.h(304) : see previous definition of 'INT16_MAX'
+     1>c:\program files (x86)\microsoft visual studio 12.0\vc\include\stdint.h(63): warning C4005: 'INT32_MAX' : macro redefinition
+                 c:\program files (x86)\national instruments\labview 2013\cintools\fundtypes.h(307) : see previous definition of 'INT32_MAX'
+     1>c:\program files (x86)\microsoft visual studio 12.0\vc\include\stdint.h(64): warning C4005: 'INT64_MAX' : macro redefinition
+                 c:\program files (x86)\national instruments\labview 2013\cintools\fundtypes.h(373) : see previous definition of 'INT64_MAX'
+     1>c:\program files (x86)\microsoft visual studio 12.0\vc\include\stdint.h(65): warning C4005: 'UINT8_MAX' : macro redefinition
+                 c:\program files (x86)\national instruments\labview 2013\cintools\fundtypes.h(312) : see previous definition of 'UINT8_MAX'
+     1>c:\program files (x86)\microsoft visual studio 12.0\vc\include\stdint.h(66): warning C4005: 'UINT16_MAX' : macro redefinition
+                 c:\program files (x86)\national instruments\labview 2013\cintools\fundtypes.h(315) : see previous definition of 'UINT16_MAX'
+     1>c:\program files (x86)\microsoft visual studio 12.0\vc\include\stdint.h(67): warning C4005: 'UINT32_MAX' : macro redefinition
+                 c:\program files (x86)\national instruments\labview 2013\cintools\fundtypes.h(318) : see previous definition of 'UINT32_MAX'
+     1>c:\program files (x86)\microsoft visual studio 12.0\vc\include\stdint.h(68): warning C4005: 'UINT64_MAX' : macro redefinition
+                 c:\program files (x86)\national instruments\labview 2013\cintools\fundtypes.h(376) : see previous definition of 'UINT64_MAX'
+     1>c:\users\james\documents\visual studio 2013\projects\tmsconsole\tmsconsole\tmsconsole.cpp(134): warning C4996: 'strcpy': This function or variable may be unsafe. Consider using strcpy_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+                 c:\program files (x86)\microsoft visual studio 12.0\vc\include\string.h(112) : see declaration of 'strcpy'
+     1>c:\users\james\documents\visual studio 2013\projects\tmsconsole\tmsconsole\tmsconsole.cpp(178): warning C4996: 'sscanf': This function or variable may be unsafe. Consider using sscanf_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+                 c:\program files (x86)\microsoft visual studio 12.0\vc\include\stdio.h(304) : see declaration of 'sscanf'
+     1>c:\users\james\documents\visual studio 2013\projects\tmsconsole\tmsconsole\tmsconsole.cpp(183): warning C4996: 'sscanf': This function or variable may be unsafe. Consider using sscanf_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+                 c:\program files (x86)\microsoft visual studio 12.0\vc\include\stdio.h(304) : see declaration of 'sscanf'
+     1>c:\users\james\documents\visual studio 2013\projects\tmsconsole\tmsconsole\tmsconsole.cpp(312): warning C4996: 'strtok': This function or variable may be unsafe. Consider using strtok_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+                 c:\program files (x86)\microsoft visual studio 12.0\vc\include\string.h(204) : see declaration of 'strtok'
+     1>c:\users\james\documents\visual studio 2013\projects\tmsconsole\tmsconsole\tmsconsole.cpp(315): warning C4996: 'strtok': This function or variable may be unsafe. Consider using strtok_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+                 c:\program files (x86)\microsoft visual studio 12.0\vc\include\string.h(204) : see declaration of 'strtok'
+     1>c:\users\james\documents\visual studio 2013\projects\tmsconsole\tmsconsole\tmsconsole.cpp(325): warning C4018: '<' : signed/unsigned mismatch
+     1>c:\users\james\documents\visual studio 2013\projects\tmsconsole\tmsconsole\tmsconsole.cpp(347): warning C4018: '<' : signed/unsigned mismatch
+     1>c:\users\james\documents\visual studio 2013\projects\tmsconsole\tmsconsole\tmsconsole.cpp(381): warning C4996: 'asctime': This function or variable may be unsafe. Consider using asctime_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+                 c:\program files (x86)\microsoft visual studio 12.0\vc\include\time.h(174) : see declaration of 'asctime'
+     1>c:\users\james\documents\visual studio 2013\projects\tmsconsole\tmsconsole\tmsconsole.cpp(381): warning C4996: 'localtime': This function or variable may be unsafe. Consider using localtime_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+                 c:\program files (x86)\microsoft visual studio 12.0\vc\include\time.inl(112) : see declaration of 'localtime'
+     1>c:\users\james\documents\visual studio 2013\projects\tmsconsole\tmsconsole\tmsconsole.cpp(382): warning C4996: 'asctime': This function or variable may be unsafe. Consider using asctime_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+                 c:\program files (x86)\microsoft visual studio 12.0\vc\include\time.h(174) : see declaration of 'asctime'
+     1>c:\users\james\documents\visual studio 2013\projects\tmsconsole\tmsconsole\tmsconsole.cpp(389): warning C4996: 'asctime': This function or variable may be unsafe. Consider using asctime_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+                 c:\program files (x86)\microsoft visual studio 12.0\vc\include\time.h(174) : see declaration of 'asctime'
+     1>c:\users\james\documents\visual studio 2013\projects\tmsconsole\tmsconsole\tmsconsole.cpp(390): warning C4996: 'asctime': This function or variable may be unsafe. Consider using asctime_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+                 c:\program files (x86)\microsoft visual studio 12.0\vc\include\time.h(174) : see declaration of 'asctime'
+     1>c:\users\james\documents\visual studio 2013\projects\tmsconsole\tmsconsole\tmsconsole.cpp(414): warning C4018: '<' : signed/unsigned mismatch
+     1>c:\users\james\documents\visual studio 2013\projects\tmsconsole\tmsconsole\tmsconsole.cpp(423): warning C4018: '<' : signed/unsigned mismatch
+     1>c:\users\james\documents\visual studio 2013\projects\tmsconsole\tmsconsole\tmsconsole.cpp(433): warning C4018: '<' : signed/unsigned mismatch
+     1>c:\users\james\documents\visual studio 2013\projects\tmsconsole\tmsconsole\tmsconsole.cpp(440): warning C4018: '<' : signed/unsigned mismatch
+     1>c:\users\james\documents\visual studio 2013\projects\tmsconsole\tmsconsole\tmsconsole.cpp(447): warning C4018: '<' : signed/unsigned mismatch
+     1>c:\users\james\documents\visual studio 2013\projects\tmsconsole\tmsconsole\tmsconsole.cpp(290): warning C4101: 'c' : unreferenced local variable
+     1>c:\users\james\documents\visual studio 2013\projects\tmsconsole\tmsconsole\tmsconsole.cpp(495): warning C4996: 'strtok': This function or variable may be unsafe. Consider using strtok_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+                 c:\program files (x86)\microsoft visual studio 12.0\vc\include\string.h(204) : see declaration of 'strtok'
+     1>c:\users\james\documents\visual studio 2013\projects\tmsconsole\tmsconsole\tmsconsole.cpp(498): warning C4996: 'strtok': This function or variable may be unsafe. Consider using strtok_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+                 c:\program files (x86)\microsoft visual studio 12.0\vc\include\string.h(204) : see declaration of 'strtok'
+     1>c:\users\james\documents\visual studio 2013\projects\tmsconsole\tmsconsole\tmsconsole.cpp(526): warning C4996: 'asctime': This function or variable may be unsafe. Consider using asctime_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+                 c:\program files (x86)\microsoft visual studio 12.0\vc\include\time.h(174) : see declaration of 'asctime'
+     1>c:\users\james\documents\visual studio 2013\projects\tmsconsole\tmsconsole\tmsconsole.cpp(527): warning C4996: 'asctime': This function or variable may be unsafe. Consider using asctime_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+                 c:\program files (x86)\microsoft visual studio 12.0\vc\include\time.h(174) : see declaration of 'asctime'
+     1>c:\users\james\documents\visual studio 2013\projects\tmsconsole\tmsconsole\tmsconsole.cpp(535): warning C4996: 'asctime': This function or variable may be unsafe. Consider using asctime_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+                 c:\program files (x86)\microsoft visual studio 12.0\vc\include\time.h(174) : see declaration of 'asctime'
+     1>c:\users\james\documents\visual studio 2013\projects\tmsconsole\tmsconsole\tmsconsole.cpp(536): warning C4996: 'asctime': This function or variable may be unsafe. Consider using asctime_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+                 c:\program files (x86)\microsoft visual studio 12.0\vc\include\time.h(174) : see declaration of 'asctime'
+     1>c:\users\james\documents\visual studio 2013\projects\tmsconsole\tmsconsole\tmsconsole.cpp(595): warning C4244: '=' : conversion from 'double' to 'int', possible loss of data
+     1>c:\users\james\documents\visual studio 2013\projects\tmsconsole\tmsconsole\tmsconsole.cpp(599): warning C4244: '=' : conversion from 'double' to 'int', possible loss of data
+     1>c:\users\james\documents\visual studio 2013\projects\tmsconsole\tmsconsole\tmsconsole.cpp(512): warning C4101: 'old' : unreferenced local variable
+     1>c:\users\james\documents\visual studio 2013\projects\tmsconsole\tmsconsole\tmsconsole.cpp(511): warning C4101: 'now' : unreferenced local variable
+     1>c:\users\james\documents\visual studio 2013\projects\tmsconsole\tmsconsole\tmsconsole.cpp(473): warning C4101: 'c' : unreferenced local variable
+       Link:
+         C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\link.exe /ERRORREPORT:PROMPT /OUT:"C:\Users\James\Documents\Visual Studio 2013\Projects\TMSConsole\Debug\TMSConsole.exe" /INCREMENTAL /NOLOGO /LIBPATH:C:\MinGW\bin /LIBPATH:"C:\armadillo-4.600.4\examples\lib_win32" OPCFunctions.lib libblas.lib liblapack.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /DEBUG /PDB:"C:\Users\James\Documents\Visual Studio 2013\Projects\TMSConsole\Debug\TMSConsole.pdb" /SUBSYSTEM:CONSOLE /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"C:\Users\James\Documents\Visual Studio 2013\Projects\TMSConsole\Debug\TMSConsole.lib" /MACHINE:X86 Debug\stdafx.obj
+         Debug\TMSConsole.obj
+         TMSConsole.vcxproj -> C:\Users\James\Documents\Visual Studio 2013\Projects\TMSConsole\Debug\TMSConsole.exe
+     1>Done Building Project "C:\Users\James\Documents\Visual Studio 2013\Projects\TMSConsole\TMSConsole\TMSConsole.vcxproj" (Build target(s)).
+
+Build succeeded.
+
+Time Elapsed 00:00:06.63

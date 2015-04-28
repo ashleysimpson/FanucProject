@@ -1,0 +1,6 @@
+install mingw with gcc and fortran
+install armadillo and uncomment define BLAS and LAPACK
+
+--Remember to include batteries into installation manual
+
+please refer to project manual to compile C code

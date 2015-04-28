@@ -1,0 +1,94 @@
+	int i = 0;
+	int j = 0;
+	char c;
+
+	time_t arrivalTime2;
+	time_t notificationTime2;
+	vector<double*> pathPoints = vector<double*>();
+	
+
+
+	while (true){
+		i = 0;
+		printf("Entering Path Planning mode: \n");
+		while (true){
+			printf("Press P when Subject Tracker is at Path Point %d or Press G to end Path \n..", i + 1);
+			c = getchar();
+			if (c != '\n') getchar(); // clear getchar buffer of return key
+			if (c == 'P' || c == 'p') {
+				//Record timestamp of when we arrived to CalibrationPoint
+				time(&arrivalTime2);
+				printf("Retrieving data: Do not move Subject Tracker. \n");
+				//Period at which notifications appear
+				int notificationPeriod = 5;
+				int notificationTimer = notificationPeriod;
+				printf("Arrived to Point at: %s", asctime(localtime(&arrivalTime2)));
+				printf("Last Brainsight Update at: %s", asctime(&lastUpdate));
+				while (difftime(arrivalTime2, lastUpdateTime) > 0 || CTStatus != 1){ //busywait until brainsight data is up to date
+					time(&notificationTime2);
+					//notify user of status of point every 10 seconds
+					if (difftime(notificationTime2, arrivalTime2) > notificationTimer){
+						if (difftime(arrivalTime2, lastUpdateTime) > 0){
+							cout << "Notification: Brainsight still out-of-date.\n";
+							printf("First arrived to Point at: %s", asctime(localtime(&arrivalTime2)));
+							printf("Last Brainsight Update at: %s", asctime(&lastUpdate));
+						}
+						if (STStatus != 1){
+							cout << "Notification: Subject Tracker is in failed status. Please assure coil is visible to Polaris.\n";
+						}
+						notificationTimer = notificationTimer + notificationPeriod;
+					}
+				}
+				double* pointArray = (double*)malloc(sizeof(double) * 16);
+				for (j = 0; j < 16; j++){
+					pointArray[j] = brainSightST[j];
+				}
+				pathPoints.push_back(pointArray);
+				printf("Brainsight data up-to-date and Camera Point retrieved. \n");
+				i++;
+			}
+			else if (c == 'G' || c == 'g'){
+				break;
+			}
+			else{
+				printf("Bad input, try again. \n");
+			}
+			
+		}
+		printf("Entering Travel mode: \n");
+		printf("Travelling to the following points:\n");
+		for (i = 0; i < pathPoints.size(); i++){
+			printf("Point %d: ", i+1);
+			for (j = 0; j < 16; j++){
+				printf("%f ",pathPoints.at(i)[j]);
+			}
+			printf("\n");
+		}
+		
+		//create vectors for each path point
+		vector<vec> pathCamVectors = vector<vec>();
+		vector<mat> pathRobVectors = vector<mat>();
+		for (i = 0; i < pathPoints.size(); i++){
+			vec camVector(4);
+			camVector << pathPoints.at(i)[3] << pathPoints.at(i)[7] << pathPoints.at(i)[11] << 1 << endr;
+			pathCamVectors.push_back(camVector);
+		}
+		mat transMatrix(4, 4);
+		transMatrix << 1 << 0 << 0 << 0 << endr
+			<< 0 << 1 << 0 << 0 << endr
+			<< 0 << 0 << 1 << 0 << endr
+			<< 0 << 0 << 0 << 1 << endr;
+		for (i = 0; i < pathPoints.size(); i++){
+			mat result = transMatrix*pathCamVectors.at(i);
+			pathRobVectors.push_back(result);
+			result.print("result:");
+		}
+		
+		for (i = 0; i < pathPoints.size(); i++){
+			mat result = transMatrix*pathCamVectors.at(i);
+			pathRobVectors.push_back(result);
+			result.print("result:");
+		}
+
+		//free vector elements afterwards
+	}

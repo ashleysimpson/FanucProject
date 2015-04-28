@@ -1,0 +1,497 @@
+// TMSConsole.cpp : Defines the entry point for the console application.
+//
+#define ARMA_DONT_USE_BLAS
+#include "stdafx.h"
+#include "OPCFunctions.h"
+#include <iostream>
+#include <string>
+#include <stdint.h>
+#include <thread>
+#include <iostream>
+#include <armadillo>
+#include <windows.h>
+#include <time.h> 
+
+using namespace std;
+using namespace arma;
+
+//BrainSight tracker signals in 4x4 position matrix with coordinates in the last column
+double brainSightST[16];
+double brainSightP[16];
+double brainSightCT[16];
+double brainSightLCT[16];
+double brainSightTT[16];
+double brainSightCB[16];
+double brainSightSRMatrix[16];
+
+//Contains the timestamp of the Brainsight output file.
+struct tm lastUpdate;
+time_t lastUpdateTime;
+
+//Status of data parsed from BrainSight. 1 signifies the value is up-to-date with lastUpdate timestamp, 0 signifies out of date value
+//Variable may fall out of date if tracker is not visible by Polaris camera or last update is too old
+
+int STStatus = 0;
+int PStatus = 0;
+int CTStatus = 0;
+int LCTStatus = 0;
+int TTStatus = 0;
+int CBStatus = 0;
+int SRStatus = 0;
+
+void ReadOPC(char *OPCURL, int32_t *OPCData, int32_t len){
+	OPCRead(OPCURL, OPCData, len);
+}
+
+//Given 4 6-length coordinate vectors in XYZWPR coordinates for the robot's points and the corresponding camera points, computes the 4x4 transformation matrix
+mat computeTransformationMatrix(vector<double*> robPoints, vector<double*> camPoints)
+{
+	int arraySize = 6;
+	int transformationMatrixSize = 4;
+	mat M(transformationMatrixSize, transformationMatrixSize);
+
+	int i;
+	int j;
+	for (i = 0; i < transformationMatrixSize; i++){
+		for (j = 0; j < transformationMatrixSize; j++){
+			if (j == transformationMatrixSize - 1) M(i, j) = 1;
+			else M(i, j) = camPoints.at(i)[j];
+		}
+	}
+
+	//create vectors
+	vector<vec> robVectors = vector<vec>();
+	for (i = 0; i < transformationMatrixSize; i++){
+		vec robVector(4);
+		robVector << robPoints.at(0)[i] << robPoints.at(1)[i] << robPoints.at(2)[i] << robPoints.at(3)[i] << endr;
+		robVectors.push_back(robVector);
+	}
+
+	vector<vec> camVectors = vector<vec>();
+	for (i = 0; i < transformationMatrixSize; i++){
+		vec camVector(4);
+		camVector << camPoints.at(i)[0] << camPoints.at(i)[1] << camPoints.at(i)[2] << 1 << endr;
+		camVectors.push_back(camVector);
+	}
+
+	M.print("M:");
+	robVectors.at(0).print("RobV:");
+	camVectors.at(0).print("CamV");
+
+	vec M1 = solve(M, robVectors.at(0));
+	vec M2 = solve(M, robVectors.at(1));
+	vec M3 = solve(M, robVectors.at(2));
+	vec M4 = solve(M, robVectors.at(3));
+
+	M1.print("M1:");
+	M2.print("M2:");
+	M3.print("M3:");
+	M4.print("M4:");
+	mat transMatrix(4, 4);
+	transMatrix << M1(0) << M1(1) << M1(2) << M1(3) << endr
+		<< M2(0) << M2(1) << M2(2) << M2(3) << endr
+		<< M3(0) << M3(1) << M3(2) << M3(3) << endr
+		<< 0 << 0 << 0 << 1 << endr;
+
+	transMatrix.print("Transmatrix");
+	//vec testvec("57.18,49.58,-1184.91,1");
+	//mat result = transMatrix*testvec;
+	//result.print("result:");
+	//getchar();
+	return transMatrix;
+}
+
+char* stringToChar(string str){
+	const char *constCharStr = str.c_str();
+	char *charStr = new char[str.length() + 1];
+	strcpy(charStr, constCharStr);
+	charStr[str.length()] = '\0';
+	return charStr;
+}
+
+//parses Brainsight output file for tracker coordinates and updates global variables accordingly given Brainsight output file path
+void parseBrainsight(string logPath){
+	ifstream filestream;
+	time_t now;
+	time_t old;
+	time(&now);
+	time(&old);
+	double seconds;
+	//Parsing period length
+	double period = 4;
+	int hh, mm, ss;
+	int year, date, month;
+	string line;
+	stringstream linestream;
+	string token;
+	string IDTag;
+	while (true){
+
+		//Check if current position matches calibration point every 4 seconds
+		time(&now);
+		seconds = difftime(now, old);
+		if (seconds < period) continue;
+		else{
+			time(&old);
+			filestream.open(logPath);
+			while (filestream.good())
+			{
+				while (getline(filestream, line))
+				{
+					linestream << line;
+					//sample line : <timestamp> 2015-02-27 14:01:03.353
+					//get identifying tag value
+					getline(linestream, token, '<');
+					getline(linestream, token, '>');
+					IDTag = token;
+					getline(linestream, token, ' '); //removes leading blank space;
+					int i = 0;
+
+					if (IDTag == "timestamp"){
+						getline(linestream, token, ' '); //get date
+						sscanf(token.c_str(), "%d-%d-%d", &year, &month, &date);
+						lastUpdate.tm_year = year - 1900;
+						lastUpdate.tm_mon = month - 1;
+						lastUpdate.tm_mday = date;
+						getline(linestream, token, ' '); //get time
+						sscanf(token.c_str(), "%d:%d:%d", &hh, &mm, &ss);
+						lastUpdate.tm_hour = hh;
+						lastUpdate.tm_min = mm;
+						lastUpdate.tm_sec = ss;
+						lastUpdateTime = mktime(&lastUpdate);
+						//stringstream strings;
+						//strings << lastUpdateTime;
+						//cout << strings.str() << "\n";
+						//printf("Current local time and date: %s", asctime(&lastUpdate));
+					}
+					else if (IDTag == "tracker ST"){
+						while (getline(linestream, token, ' ')){
+							if (token != "none"){
+								brainSightST[i] = stod(token);
+								STStatus = 1;
+								i++;
+							}
+							else{
+								STStatus = 0;
+							}
+						}
+					}
+					else if (IDTag == "tracker P"){
+						while (getline(linestream, token, ' ')){
+							if (token != "none"){
+								brainSightP[i] = stod(token);
+								PStatus = 1;
+								i++;
+							}
+							else{
+								PStatus = 0;
+							}
+						}
+					}
+					else if (IDTag == "tracker CT"){
+						while (getline(linestream, token, ' ')){
+							if (token != "none"){
+								brainSightCT[i] = stod(token);
+								CTStatus = 1;
+								i++;
+							}
+							else{
+								CTStatus = 0;
+							}
+						}
+					}
+					else if (IDTag == "tracker LCT"){
+						while (getline(linestream, token, ' ')){
+							if (token != "none"){
+								brainSightLCT[i] = stod(token);
+								LCTStatus = 1;
+								i++;
+							}
+							else{
+								LCTStatus = 0;
+							}
+						}
+					}
+					else if (IDTag == "tracker TT"){
+						while (getline(linestream, token, ' ')){
+							if (token != "none"){
+								brainSightTT[i] = stod(token);
+								TTStatus = 1;
+								i++;
+							}
+							else{
+								TTStatus = 0;
+							}
+						}
+					}
+					else if (IDTag == "tracker CB"){
+						while (getline(linestream, token, ' ')){
+							if (token != "none"){
+								brainSightCB[i] = stod(token);
+								CBStatus = 1;
+								i++;
+							}
+							else{
+								CBStatus = 0;
+							}
+						}
+					}
+					else if (IDTag == "subject registration"){
+						while (getline(linestream, token, ' ')){
+							if (token != "none"){
+								brainSightSRMatrix[i] = stod(token);
+								SRStatus = 1;
+								i++;
+							}
+							else{
+								SRStatus = 0;
+							}
+						}
+					}
+					linestream.clear();
+				}
+			}
+			filestream.close();
+			filestream.clear();
+		}
+	}
+}
+
+int _tmain(int argc, _TCHAR* argv[])
+{
+	int const dataLength = 6;
+	string PR2URL("opc://localhost/National Instruments.NIOPCServers/Robotchan.GEPLC.$PR2");
+	string CurPosURL("opc://localhost/National Instruments.NIOPCServers/Robotchan.GEPLC.$CurPos");
+	char *charCurPosURL = stringToChar(CurPosURL);
+	char *charPR2URL = stringToChar(PR2URL);
+
+	int32_t dataToRead[dataLength] = { 0 };
+	double curPos[dataLength] = { 0.0 };
+
+	thread ReadOPCThread(ReadOPC, charCurPosURL, dataToRead, dataLength);
+	thread parseBrainsight(parseBrainsight, "C:\\Users\\James\\Google Drive\\MAC_WIN_CONN\\output");
+	cout << "Initializing OPCRead threads and Brainsight parsing threads...\n";
+	Sleep(6000); //Sleep to allow for thread initialization
+
+	int i = 0;
+	int j = 0;
+	char c;
+
+	time_t arrivalTime2;
+	time_t notificationTime2;
+
+	vector<int*> calibrationPoints = vector<int*>();
+	vector<double*> calibrationCamPoints = vector<double*>();
+	
+	//CalibrationPoints contains 6D coordinates in robot space separated by commas on each line
+
+	//Begin Calibration routine
+	ifstream filestream("CalibrationPoints.txt");
+	string line;
+	const char delimiter[2] = ",";
+	while (filestream.good())
+	{
+		while (getline(filestream, line))
+		{
+			//for each line, make a new array of points and add it to the calibration vector
+			int *pointArray;
+			double *camPointArray;
+			pointArray = (int *)malloc(sizeof(int) * dataLength);
+			camPointArray = (double *)malloc(sizeof(double) * 16);
+			char* charLine = stringToChar(line);
+			int i = 0;
+			char *coordinate = strtok(charLine, delimiter);
+			while (coordinate != NULL) {
+				pointArray[i] = (int)atof(coordinate);
+				coordinate = strtok(NULL, delimiter);
+				i++;
+			}
+			calibrationPoints.push_back(pointArray);
+			calibrationCamPoints.push_back(camPointArray);
+		}
+	}
+
+
+	//print calibration coordinates
+	cout << "Calibrating to the following coordinates:\n";
+	for (i = 0; i < calibrationPoints.size(); i++){
+		printf("Coordinate %d : ", i);
+		for (j = 0; j < dataLength; j++){
+			if (j == dataLength - 1) {
+				cout << calibrationPoints.at(i)[j];
+			}
+			else {
+				cout << calibrationPoints.at(i)[j] << ",";
+			}
+		}
+		cout << "\n";
+	}
+
+	time_t now;
+	time_t old;
+	time_t notificationTime;
+	time_t arrivalTime;
+
+	time(&now);
+	double seconds;
+	double timeout = 3600;
+	double elapsed = 0;
+	for (i = 0; i < calibrationPoints.size(); i++){
+		printf("Calibration Step %d out of 4: Moving to point %d... \n", i+1,i+1);
+		//Robot moves to points written to charPR2URL
+		OPCWrite(charPR2URL, calibrationPoints.at(i), dataLength);
+		time(&now);
+		time(&old);
+		while (true){
+			//Check if current position matches calibration point every second
+			time(&now);
+			seconds = difftime(now, old);
+			elapsed = elapsed + seconds;
+			if (elapsed > timeout){
+				printf("System timed out after %f seconds. Exiting... \n", timeout);
+				exit(1);
+			}
+			if (seconds < 1) continue;
+			else{
+				time(&old);
+				ReadGlobalVars(curPos, dataLength);
+				int fail = 0;
+				for (j = 0; j < dataLength; j++){
+					if (curPos[j] != calibrationPoints.at(i)[j]){
+						fail = 1;
+						//debug
+						//fail = 0;
+						break;
+					}
+				}
+				if (fail == 0) {
+					//Record timestamp of when we arrived to CalibrationPoint
+					time(&arrivalTime);
+					//Period at which notifications appear
+					int notificationPeriod = 10;
+					int notificationTimer = notificationPeriod;
+					printf("Arrived to Point at: %s", asctime(localtime(&arrivalTime)));
+					printf("Last Brainsight Update at: %s", asctime(&lastUpdate));
+					while (difftime(arrivalTime, lastUpdateTime) > 0 || CTStatus != 1){ //busywait until brainsight data is up to date
+						time(&notificationTime);
+						//notify user of status of point every 10 seconds
+						if (difftime(notificationTime, arrivalTime) > notificationTimer){
+							if (difftime(arrivalTime, lastUpdateTime) > 0){
+								cout << "Notification: Brainsight still out-of-date.\n";
+								printf("First arrived to Point at: %s", asctime(localtime(&arrivalTime)));
+								printf("Last Brainsight Update at: %s", asctime(&lastUpdate));
+							}
+							if (CTStatus != 1){
+								cout << "Notification: Coil Tracker is in failed status. Please assure coil is visible to Polaris.\n";
+							}
+							notificationTimer = notificationTimer + notificationPeriod;
+						}
+					}
+					for (j = 0; j < 16; j++){
+						calibrationCamPoints.at(i)[j] = brainSightCT[j];
+					}
+					cout << "Brainsight data up-to-date and Camera Point retrieved. Continuing calibration... \n";
+					break;
+				}
+			}
+		}
+	}
+
+	vector<double*> robPoints = vector<double*>();
+	vector<double*> camPoints = vector<double*>();
+
+	int arraySize = 6;
+	for (i = 0; i < calibrationPoints.size(); i++){
+		double *pointArray;
+		pointArray = (double *)malloc(sizeof(double) * arraySize);
+		for (j = 0; j < arraySize; j++){
+			pointArray[j] = calibrationPoints.at(i)[j];
+		}
+		robPoints.push_back(pointArray);
+	}
+
+	for (i = 0; i < calibrationCamPoints.size(); i++){
+		double *pointArray;
+		pointArray = (double *)malloc(sizeof(double) * arraySize);
+		for (j = 0; j < arraySize; j++){
+			if (j > 2) pointArray[j] = 0; // set euler positions to 0
+			else pointArray[j] = calibrationCamPoints.at(i)[3+4*j]; //set cam points
+		}
+		camPoints.push_back(pointArray);
+	}
+	cout << "calibrationCamPoints:\n";
+	for (i = 0; i < calibrationCamPoints.size(); i++){
+		for (j = 0; j < 16; j++){
+			printf("%f ", calibrationCamPoints.at(i)[j]);
+		}
+		cout << "\n";
+	}
+	cout << "robPoints:\n";
+	for (i = 0; i < robPoints.size(); i++){
+		for (j = 0; j < 6; j++){
+			printf("%f ", robPoints.at(i)[j]);
+		}
+		cout << "\n";
+	}
+	cout << "camPoints:\n";
+	for (i = 0; i < camPoints.size(); i++){
+		for (j = 0; j < 6; j++){
+			printf("%f ", camPoints.at(i)[j]);
+		}
+		cout << "\n";
+	}
+
+	mat transMatrix = computeTransformationMatrix(robPoints, camPoints);
+
+	getchar();
+	double pointArray[16];
+	while (true){
+		printf("Following ST Tracker: \n");
+		time(&arrivalTime2);
+		printf("Retrieving data: Do not move Subject Tracker. \n");
+		//Period at which notifications appear
+		int notificationPeriod = 10;
+		int notificationTimer = notificationPeriod;
+		printf("Arrived to Point at: %s", asctime(localtime(&arrivalTime2)));
+		printf("Last Brainsight Update at: %s", asctime(&lastUpdate));
+		while (difftime(arrivalTime2, lastUpdateTime) > 0 || STStatus != 1){ //busywait until brainsight data is up to date
+			time(&notificationTime2);
+			//notify user of status of point every 10 seconds
+			if (difftime(notificationTime2, arrivalTime2) > notificationTimer){
+				if (difftime(arrivalTime2, lastUpdateTime) > 0){
+					cout << "Notification: Brainsight still out-of-date.\n";
+					printf("First arrived to Point at: %s", asctime(localtime(&arrivalTime2)));
+					printf("Last Brainsight Update at: %s", asctime(&lastUpdate));
+				}
+				if (STStatus != 1){
+					cout << "Notification: Subject Tracker is in failed status. Please assure coil is visible to Polaris.\n";
+				}
+				notificationTimer = notificationTimer + notificationPeriod;
+			}
+		}
+		printf("brainSightST:");
+		for (j = 0; j < 16; j++){
+			pointArray[j] = brainSightST[j];
+			printf("%f ", brainSightST[j]);
+		}
+		printf("Brainsight data up-to-date and Camera Point retrieved. \n");
+		//create vectors for each path point
+		vec camVector(4);
+		camVector << pointArray[3] << pointArray[7] << pointArray[11] << 1 << endr;
+		transMatrix.print("transMatrix");
+		camVector.print("camVector");
+		vec result = transMatrix*camVector;
+		result.print("result:");
+
+		int robotDestination[6] = { 0, 0, 0, 93, -33, 45 };
+		for (i = 0; i < 3; i++){
+			robotDestination[i] = result(i);
+		}
+		OPCWrite(charPR2URL, robotDestination, 6);
+		Sleep(4000);
+	}
+
+	getchar();
+	return 0;
+}
+

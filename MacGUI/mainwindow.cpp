@@ -49,6 +49,55 @@ MainWindow::~MainWindow()
     delete ui;
 }
 
+// responsible for stripping useful data and sending to the share for the windows computer
+void MainWindow::streamData()
+{
+    // open the file to the desktop and allow writing/reading of information
+    QString outputFilename = "/Users/as_763/Desktop/output.txt";
+    QString inputFilename = "/Users/as_763/Desktop/Tool Locations Dump.txt";
+    QFile f_out(outputFilename);
+    QFile f_in(inputFilename);
+    f_out.open(QIODevice::WriteOnly | QIODevice::Text);
+    f_in.open(QIODevice::ReadOnly | QIODevice::Text);
+
+    // if opened the writing file wrong then return
+    if(!f_out.isOpen()){
+        qDebug() << "- Error, unable to open" << outputFilename << "for output" <<"\n";
+        return;
+    }
+
+    // if opened the reading file wrong then return
+    if(!f_in.isOpen()){
+        qDebug() << "- Error, unable to open" << inputFilename << "for input" <<"\n";
+        return;
+    }
+
+    // point a text stream at the file to allow writing and reading
+    QTextStream outStream(&f_out);
+    QTextStream inStream(&f_in);
+
+    // go to the end of the file, track the end
+    int tracker = 0;
+    while (!inStream.atEnd()) {
+        inStream.readLine();
+        tracker++;
+    }
+
+    // TODO: fix this part, issue here
+
+    // write information to the output
+    inStream.seek(tracker-7);
+    outStream << inStream.readLine();
+    inStream.seek(tracker-6);
+    outStream << inStream.readLine();
+    inStream.seek(tracker-5);
+    outStream << inStream.readLine();
+
+    // close the files
+    f_out.close();
+    f_in.close();
+}
+
 // control the streaming of the python script
 void MainWindow::on_streamingPushButton_clicked()
 {
@@ -58,6 +107,7 @@ void MainWindow::on_streamingPushButton_clicked()
         ui->streamingLabel->setStyleSheet(greenTextBox);
         ui->streamingPushButton->setText("End Streaming");
         isStreaming = true;
+        streamData();
     } else {
         ui->streamingLabel->setText("Not Streaming...");
         ui->streamingLabel->setStyleSheet(redTextBox);

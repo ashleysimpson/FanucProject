@@ -2,6 +2,10 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
+#include <QFile>
+#include <QTextStream>
+#include <QDebug>
+#include <QStandardPaths>
 
 namespace Ui {
 class MainWindow;
@@ -21,6 +25,8 @@ private slots:
     void on_pointsPushButton_clicked();
 
     void on_checkConnectionPushButton_clicked();
+
+    void streamData();
 
 private:
     Ui::MainWindow *ui;

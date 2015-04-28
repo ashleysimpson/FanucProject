@@ -15,6 +15,13 @@ public:
     explicit MainWindow(QWidget *parent = 0);
     ~MainWindow();
 
+private slots:
+    void on_streamingPushButton_clicked();
+
+    void on_pointsPushButton_clicked();
+
+    void on_checkConnectionPushButton_clicked();
+
 private:
     Ui::MainWindow *ui;
 };

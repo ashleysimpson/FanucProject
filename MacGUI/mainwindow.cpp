@@ -83,15 +83,42 @@ void MainWindow::streamData()
         tracker++;
     }
 
-    // TODO: fix this part, issue here
+    // go through file again and get the last 8 lines in the file
+    int position = 0;
+    inStream.seek(0);
+    while (!inStream.atEnd()) {
+        // check for the 7th to last line
+        if (tracker-8 == position) {
+            outStream << inStream.readLine() << "\n";
+        // check for the 6th to last line
+        } else if (tracker-7 == position) {
+            outStream << inStream.readLine() << "\n";
+        // check for the 5th to last line
+        } else if (tracker-6 == position) {
+            outStream << inStream.readLine() << "\n";
+        // check for the 4th to last line
+        } else if (tracker-5 == position) {
+            outStream << inStream.readLine() << "\n";
+        // check for the 3rd to last line
+        } else if (tracker-4 == position) {
+            outStream << inStream.readLine() << "\n";
+        // check for the 2nd to last line
+        } else if (tracker-3 == position) {
+            outStream << inStream.readLine() << "\n";
+        // check for the 1st to last line
+        } else if (tracker-2 == position) {
+            outStream << inStream.readLine() << "\n";
+        // check for the very last line
+        } else if (tracker-1 == position) {
+            outStream << inStream.readLine() << "\n";
+        // increment the file if none of the above cases hold
+        } else {
+            inStream.readLine();
+        }
 
-    // write information to the output
-    inStream.seek(tracker-7);
-    outStream << inStream.readLine();
-    inStream.seek(tracker-6);
-    outStream << inStream.readLine();
-    inStream.seek(tracker-5);
-    outStream << inStream.readLine();
+        // increment the position counter
+        position++;
+    }
 
     // close the files
     f_out.close();

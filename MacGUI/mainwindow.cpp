@@ -52,77 +52,69 @@ MainWindow::~MainWindow()
 // responsible for stripping useful data and sending to the share for the windows computer
 void MainWindow::streamData()
 {
-    // open the file to the desktop and allow writing/reading of information
-    QString outputFilename = "/Users/as_763/Desktop/output.txt";
-    QString inputFilename = "/Users/as_763/Desktop/Tool Locations Dump.txt";
-    QFile f_out(outputFilename);
-    QFile f_in(inputFilename);
-    f_out.open(QIODevice::WriteOnly | QIODevice::Text);
-    f_in.open(QIODevice::ReadOnly | QIODevice::Text);
+    while (true) {
+        // open the file to the desktop and allow writing/reading of information
+        QString outputFilename = "/Users/as_763/Desktop/output.txt";
+        QString inputFilename = "/Users/as_763/Desktop/Tool Locations Dump.txt";
+        QFile f_out(outputFilename);
+        QFile f_in(inputFilename);
+        f_out.open(QIODevice::WriteOnly | QIODevice::Text);
+        f_in.open(QIODevice::ReadOnly | QIODevice::Text);
 
-    // if opened the writing file wrong then return
-    if(!f_out.isOpen()){
-        qDebug() << "- Error, unable to open" << outputFilename << "for output" <<"\n";
-        return;
-    }
-
-    // if opened the reading file wrong then return
-    if(!f_in.isOpen()){
-        qDebug() << "- Error, unable to open" << inputFilename << "for input" <<"\n";
-        return;
-    }
-
-    // point a text stream at the file to allow writing and reading
-    QTextStream outStream(&f_out);
-    QTextStream inStream(&f_in);
-
-    // go to the end of the file, track the end
-    int tracker = 0;
-    while (!inStream.atEnd()) {
-        inStream.readLine();
-        tracker++;
-    }
-
-    // go through file again and get the last 8 lines in the file
-    int position = 0;
-    inStream.seek(0);
-    while (!inStream.atEnd()) {
-        // check for the 7th to last line
-        if (tracker-8 == position) {
-            outStream << inStream.readLine() << "\n";
-        // check for the 6th to last line
-        } else if (tracker-7 == position) {
-            outStream << inStream.readLine() << "\n";
-        // check for the 5th to last line
-        } else if (tracker-6 == position) {
-            outStream << inStream.readLine() << "\n";
-        // check for the 4th to last line
-        } else if (tracker-5 == position) {
-            outStream << inStream.readLine() << "\n";
-        // check for the 3rd to last line
-        } else if (tracker-4 == position) {
-            outStream << inStream.readLine() << "\n";
-        // check for the 2nd to last line
-        } else if (tracker-3 == position) {
-            outStream << inStream.readLine() << "\n";
-        // check for the 1st to last line
-        } else if (tracker-2 == position) {
-            outStream << inStream.readLine() << "\n";
-        // check for the very last line
-        } else if (tracker-1 == position) {
-            outStream << inStream.readLine() << "\n";
-        // increment the file if none of the above cases hold
-        } else {
-            inStream.readLine();
+        // if opened the writing file wrong then return
+        if(!f_out.isOpen()){
+            qDebug() << "- Error, unable to open" << outputFilename << "for output" <<"\n";
+            return;
         }
 
-        // increment the position counter
-        position++;
-    }
+        // if opened the reading file wrong then return
+        if(!f_in.isOpen()){
+            qDebug() << "- Error, unable to open" << inputFilename << "for input" <<"\n";
+            return;
+        }
 
-    // close the files
-    f_out.close();
-    f_in.close();
+        // point a text stream at the file to allow writing and reading
+        QTextStream outStream(&f_out);
+        QTextStream inStream(&f_in);
+
+        // tracker and placeholders to get the correct lines
+        int tracker = 0;
+        QString eigth = "";
+        QString seventh = "";
+        QString sixth = "";
+        QString fifth = "";
+        QString fourth = "";
+        QString third = "";
+        QString second = "";
+        QString first = "";
+
+        // loop that finds the last line while tracker the history of the past 8 lines
+        while (!inStream.atEnd()) {
+            eigth = seventh;
+            seventh = sixth;
+            sixth = fifth;
+            fifth = fourth;
+            fourth = third;
+            third = second;
+            second = first;
+            first = inStream.readLine();
+            tracker++;
+        }
+
+        // ouput the lines to write file
+        outStream << eigth   << "\n";
+        outStream << seventh << "\n";
+        outStream << sixth   << "\n";
+        outStream << fifth   << "\n";
+        outStream << fourth  << "\n";
+        outStream << third   << "\n";
+        outStream << second  << "\n";
+        outStream << first   << "\n";
+
+        // close the files
+        f_out.close();
+        f_in.close();
+    }
 }
 
 // control the streaming of the python script

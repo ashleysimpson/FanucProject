@@ -6,6 +6,7 @@
 #include <QTextStream>
 #include <QDebug>
 #include <QStandardPaths>
+#include <QThread>
 
 namespace Ui {
 class MainWindow;
@@ -25,8 +26,6 @@ private slots:
     void on_pointsPushButton_clicked();
 
     void on_checkConnectionPushButton_clicked();
-
-    void streamData();
 
 private:
     Ui::MainWindow *ui;

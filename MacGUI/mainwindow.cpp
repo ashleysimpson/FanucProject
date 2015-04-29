@@ -1,9 +1,9 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 #include "streamthread.h"
+#include "global.h"
 
-// global variables
-bool isStreaming;
+// allows better looking ui elements, used throughout main
 QString greenTextBox = "background-color: green; border-style: outset; "
                        "border-width: 2px; border-radius: 10px; border-color: beige; "
                        "min-width: 10em; padding: 6px;";
@@ -19,9 +19,6 @@ MainWindow::MainWindow(QWidget *parent) :
     ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
-
-    // a global check for whether streaming is happening
-    isStreaming = false;
 
     // setup the header text
     ui->header->setText("    Mac Side Connection:");
@@ -54,22 +51,23 @@ MainWindow::~MainWindow()
 void MainWindow::on_streamingPushButton_clicked()
 {
     // depending on streaming conditions want to have different functionality
-    if (!isStreaming) {
+    if (stopThread) {
+        // initialize the stop streaming functionality
         ui->streamingLabel->setText("Streaming!");
         ui->streamingLabel->setStyleSheet(greenTextBox);
         ui->streamingPushButton->setText("End Streaming");
-        isStreaming = true;
 
         // start the streaming thread
+        stopThread = false;
         StreamThread *streamThread = new StreamThread;
         streamThread->start();
 
-        //streamData();
     } else {
         ui->streamingLabel->setText("Not Streaming...");
         ui->streamingLabel->setStyleSheet(redTextBox);
         ui->streamingPushButton->setText("Begin Streaming");
-        isStreaming = false;
+
+        stopThread = true;
     }
 }
 

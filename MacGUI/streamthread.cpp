@@ -1,4 +1,5 @@
 #include "streamthread.h"
+#include "global.h"
 #include <QDebug>
 
 StreamThread::StreamThread()
@@ -7,7 +8,7 @@ StreamThread::StreamThread()
 
 void StreamThread::run()
 {
-    while (true) {
+    while (!stopThread) {
         // open the file to the desktop and allow writing/reading of information
         QString outputFilename = "/Users/as_763/Desktop/output.txt";
         QString inputFilename = "/Users/as_763/Desktop/Tool Locations Dump.txt";

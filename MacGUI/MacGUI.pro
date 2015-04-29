@@ -14,9 +14,11 @@ TEMPLATE = app
 
 SOURCES += main.cpp\
         mainwindow.cpp \
-    streamthread.cpp
+    streamthread.cpp \
+    global.cpp
 
 HEADERS  += mainwindow.h \
-    streamthread.h
+    streamthread.h \
+    global.h
 
 FORMS    += mainwindow.ui

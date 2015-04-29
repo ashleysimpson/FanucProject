@@ -11,7 +11,6 @@ greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 TARGET = MacGUI
 TEMPLATE = app
 
-
 SOURCES += main.cpp\
         mainwindow.cpp \
     streamthread.cpp \
@@ -22,3 +21,8 @@ HEADERS  += mainwindow.h \
     global.h
 
 FORMS    += mainwindow.ui
+
+RESOURCES += \
+    icon.qrc
+
+ICON =

@@ -187,5 +187,17 @@ void MainWindow::on_checkConnectionPushButton_clicked()
 
 void MainWindow::on_resetButton_clicked()
 {
+    // if the streaming thread is running then can be stopped
+    stopThread = true;
 
+    // reset all labels, buttons and text to the initial state
+    ui->pointsPushButton->setEnabled(false);
+    ui->streamingPushButton->setEnabled(false);
+    ui->checkConnectionPushButton->setEnabled(true);
+    ui->streamingLabel->setStyleSheet(greyTextBox);
+    ui->pointsLabel->setStyleSheet(greyTextBox);
+    ui->checkConnectionLabel->setStyleSheet(greyTextBoxSmaller);
+    ui->checkConnectionLabel->setText("Not Checked...");
+    ui->pointsLabel->setText("Not Submitted...");
+    ui->streamingLabel->setText("Not Streaming...");
 }

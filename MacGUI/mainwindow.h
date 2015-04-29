@@ -27,6 +27,8 @@ private slots:
 
     void on_checkConnectionPushButton_clicked();
 
+    void on_resetButton_clicked();
+
 private:
     Ui::MainWindow *ui;
 };

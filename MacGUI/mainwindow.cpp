@@ -6,13 +6,22 @@
 // allows better looking ui elements, used throughout main
 QString greenTextBox = "background-color: green; border-style: outset; "
                        "border-width: 2px; border-radius: 10px; border-color: beige; "
-                       "min-width: 10em; padding: 6px;";
+                       "min-width: 10em; padding: 6px; qproperty-alignment: AlignCenter;";
 QString redTextBox = "background-color: red; border-style: outset; "
                      "border-width: 2px; border-radius: 10px; border-color: beige; "
-                     "min-width: 10em; padding: 6px;";
+                     "min-width: 10em; padding: 6px; qproperty-alignment: AlignCenter;";
 QString greyTextBox = "background-color: grey; border-style: outset; "
                       "border-width: 2px; border-radius: 10px; border-color: beige; "
-                      "min-width: 10em; padding: 6px;";
+                      "min-width: 10em; padding: 6px; qproperty-alignment: AlignCenter;";
+QString greenTextBoxSmaller = "background-color: green; border-style: outset; "
+                              "border-width: 2px; border-radius: 10px; border-color: beige; "
+                              "min-width: 8em; padding: 6px; qproperty-alignment: AlignCenter;";
+QString redTextBoxSmaller = "background-color: red; border-style: outset; "
+                            "border-width: 2px; border-radius: 10px; border-color: beige; "
+                            "min-width: 8em; padding: 6px; qproperty-alignment: AlignCenter;";
+QString greyTextBoxSmaller = "background-color: grey; border-style: outset; "
+                             "border-width: 2px; border-radius: 10px; border-color: beige; "
+                             "min-width: 8em; padding: 6px; qproperty-alignment: AlignCenter;";
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -28,14 +37,17 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->instructions->setText("All steps must be performed in order:\n\n"
                               "1. Check the connection, if no connection must fix\n    before continuing\n"
                               "2. Output the stimulation points chosen in\n    Brainsight\n"
-                              "3. Begin streaming camera information from\n    Brainsight");
+                              "3. Begin streaming camera information from\n    Brainsight\n\n"
+                              "** If any issues click Reset, also make sure all\n"
+                              "    boxes are green before continuing to Windows\n"
+                              "    setup");
 
     // setup the points, streaming and connection labels and buttons
     ui->pointsPushButton->setEnabled(false);
     ui->streamingPushButton->setEnabled(false);
     ui->streamingLabel->setStyleSheet(greyTextBox);
     ui->pointsLabel->setStyleSheet(greyTextBox);
-    ui->checkConnectionLabel->setStyleSheet(greyTextBox);
+    ui->checkConnectionLabel->setStyleSheet(greyTextBoxSmaller);
     ui->checkConnectionLabel->setText("Not Checked...");
     ui->pointsLabel->setText("Not Submitted...");
     ui->streamingLabel->setText("Not Streaming...");
@@ -121,8 +133,13 @@ void MainWindow::on_pointsPushButton_clicked()
             break;
         }
 
-        // output the data
-        outStream << checkLine << "\n";
+        // process the data to follow a specific standard, and the output this data
+        QStringList removeTabs = checkLine.split("\t");
+        outStream << removeTabs[0] << " ";
+        outStream << removeTabs[4] << " " << removeTabs[7] << " " << removeTabs[10] << " " << removeTabs[1] << " ";
+        outStream << removeTabs[5] << " " << removeTabs[8] << " " << removeTabs[11] << " " << removeTabs[2] << " ";
+        outStream << removeTabs[6] << " " << removeTabs[9] << " " << removeTabs[12] << " " << removeTabs[3] << " ";
+        outStream << "0 0 0 1\n";
     }
 
     // if at this point then the points have been successfully submitted
@@ -151,14 +168,14 @@ void MainWindow::on_checkConnectionPushButton_clicked()
     if(!file.isOpen()){
         qDebug() << "No connection!";
         ui->checkConnectionLabel->setText("Connection Bad!");
-        ui->checkConnectionLabel->setStyleSheet(redTextBox);
+        ui->checkConnectionLabel->setStyleSheet(redTextBoxSmaller);
         file.close();
         return;
     }
 
     // of connection good then signal the user
     ui->checkConnectionLabel->setText("Connection Good!");
-    ui->checkConnectionLabel->setStyleSheet(greenTextBox);
+    ui->checkConnectionLabel->setStyleSheet(greenTextBoxSmaller);
     ui->checkConnectionPushButton->setEnabled(false); // TODO: may need to be able to check connection many times so possibly adjust
 
     // if connection good then must set the points button for next step
@@ -166,4 +183,9 @@ void MainWindow::on_checkConnectionPushButton_clicked()
     ui->pointsPushButton->setEnabled(true);
 
     file.close();
+}
+
+void MainWindow::on_resetButton_clicked()
+{
+
 }

@@ -62,6 +62,17 @@ MainWindow::~MainWindow()
 // control the streaming of the python script
 void MainWindow::on_streamingPushButton_clicked()
 {
+    // check if file is accessible
+    QString inputFilename = "/Users/as_763/Desktop/Tool Locations Dump.txt";
+    QFile f_in(inputFilename);
+    f_in.open(QIODevice::ReadOnly | QIODevice::Text);
+
+    if(!f_in.isOpen()) {
+        ui->streamingLabel->setText("File Not Found!");
+        f_in.close();
+        return;
+    }
+
     // depending on streaming conditions want to have different functionality
     if (stopThread) {
         // initialize the stop streaming functionality

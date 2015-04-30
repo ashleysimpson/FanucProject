@@ -25,4 +25,4 @@ FORMS    += mainwindow.ui
 RESOURCES += \
     icon.qrc
 
-ICON =
+ICON = BlueUSBB.icns

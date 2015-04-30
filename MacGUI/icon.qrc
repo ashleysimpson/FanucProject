@@ -1,5 +1,5 @@
 <RCC>
     <qresource prefix="/icons">
-        <file>BlueUSBB.icns</file>
+        <file>MyIcon.icns</file>
     </qresource>
 </RCC>

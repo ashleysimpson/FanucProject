@@ -7,6 +7,7 @@
 #include <QDebug>
 #include <QStandardPaths>
 #include <QThread>
+#include <QFileDialog>
 
 namespace Ui {
 class MainWindow;

@@ -2,6 +2,7 @@
 #define STREAMTHREAD_H
 
 #include <QtCore>
+#include <QFileDialog>
 
 class StreamThread : public QThread
 {

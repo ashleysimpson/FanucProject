@@ -3,3 +3,4 @@
 #include "global.h"
 
 bool stopThread = true;
+QString shareOutput = "";

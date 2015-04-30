@@ -62,19 +62,22 @@ MainWindow::~MainWindow()
 // control the streaming of the python script
 void MainWindow::on_streamingPushButton_clicked()
 {
-    // check if file is accessible
-    QString inputFilename = "/Users/as_763/Desktop/Tool Locations Dump.txt";
-    QFile f_in(inputFilename);
-    f_in.open(QIODevice::ReadOnly | QIODevice::Text);
-
-    if(!f_in.isOpen()) {
-        ui->streamingLabel->setText("File Not Found!");
-        f_in.close();
-        return;
-    }
-
     // depending on streaming conditions want to have different functionality
     if (stopThread) {
+
+        // check if file is accessible
+        // also navigate to the correct location of the Tool Dump Location
+        QString inputFilename = QFileDialog::getExistingDirectory(this, tr("Navigate to the Tool Dump Locations TextFile from Brainsight..."),
+                "Desktop", QFileDialog::ShowDirsOnly) + "/Tool Locations Dump.txt";
+        QFile f_in(inputFilename);
+        f_in.open(QIODevice::ReadOnly | QIODevice::Text);
+
+        if(!f_in.isOpen()) {
+            ui->streamingLabel->setText("File Not Found!");
+            f_in.close();
+            return;
+        }
+
         // initialize the stop streaming functionality
         ui->streamingLabel->setText("Streaming!");
         ui->streamingLabel->setStyleSheet(greenTextBox);
@@ -86,6 +89,7 @@ void MainWindow::on_streamingPushButton_clicked()
         streamThread->start();
 
     } else {
+
         // initialize the start streaming functionality
         ui->streamingLabel->setText("Not Streaming...");
         ui->streamingLabel->setStyleSheet(redTextBox);
@@ -93,6 +97,7 @@ void MainWindow::on_streamingPushButton_clicked()
 
         // change this so thread can be executed again
         stopThread = true;
+
     }
 }
 
@@ -101,8 +106,10 @@ void MainWindow::on_pointsPushButton_clicked()
 {
     // assert that the points have been successfully submitted
     // assert that the connection is valid
-    QString inputFilename = "/Users/as_763/Desktop/Exported Session Data.txt";
-    QString outputFilename = "/Users/as_763/Desktop/MOCKSHARE/points.txt";
+    // assert that the connection is valid by navigating to the directory that contains Exported Session Data
+    QString inputFilename = QFileDialog::getExistingDirectory(this, tr("Navigate to the Exported Session Data TextFile from Brainsight..."),
+            "Desktop", QFileDialog::ShowDirsOnly) + "/Exported Session Data.txt";
+    QString outputFilename = shareOutput + "/points.txt";
     QFile f_in (inputFilename);
     QFile f_out (outputFilename);
     f_in.open(QIODevice::ReadOnly | QIODevice::Text);
@@ -170,9 +177,11 @@ void MainWindow::on_pointsPushButton_clicked()
 // checks the connection to the share between mac and windows machines
 void MainWindow::on_checkConnectionPushButton_clicked()
 {
-    // assert that the connection is valid
-    QString inputFilename = "/Users/as_763/Desktop/MOCKSHARE/connection.txt";
-    QFile file (inputFilename);
+    // assert that the connection is valid by navigating to share
+    QString inputFilename = QFileDialog::getExistingDirectory(this, tr("Find Correct Share..."), "Desktop", QFileDialog::ShowDirsOnly);
+
+    // open the share and check for the correct connection file present
+    QFile file (inputFilename + "/connection.txt");
     file.open(QIODevice::ReadOnly | QIODevice::Text);
 
     // if the file is not open then obviously no connection
@@ -183,6 +192,9 @@ void MainWindow::on_checkConnectionPushButton_clicked()
         file.close();
         return;
     }
+
+    // submit the share location as a global variable for all streaming
+    shareOutput = inputFilename;
 
     // of connection good then signal the user
     ui->checkConnectionLabel->setText("Connection Good!");
@@ -200,6 +212,9 @@ void MainWindow::on_resetButton_clicked()
 {
     // if the streaming thread is running then can be stopped
     stopThread = true;
+
+    // reset the connection checker
+    shareOutput = "";
 
     // reset all labels, buttons and text to the initial state
     ui->pointsPushButton->setEnabled(false);

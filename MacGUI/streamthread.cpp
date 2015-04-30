@@ -11,7 +11,7 @@ void StreamThread::run()
     // make sure to continue running while the user hasn't signaled to stop
     while (!stopThread) {
         // open the file to the desktop and allow writing/reading of information
-        QString outputFilename = "/Users/as_763/Desktop/MOCKSHARE/cameradata.txt";
+        QString outputFilename = shareOutput + "/cameradata.txt";
         QString inputFilename = "/Users/as_763/Desktop/Tool Locations Dump.txt";
         QFile f_out(outputFilename);
         QFile f_in(inputFilename);

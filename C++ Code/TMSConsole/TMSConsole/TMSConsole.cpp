@@ -12,7 +12,7 @@
 #include <armadillo>
 #include <windows.h>
 #include <time.h> 
-#include <mutex> 
+#include <mutex>
 
 using namespace std;
 using namespace arma;
@@ -49,6 +49,13 @@ int SRStatus = 0;
 void ReadOPC(char *OPCURL, int32_t *OPCData, int32_t len)
 {
 	OPCRead(OPCURL, OPCData, len);
+}
+
+// absor method of transformation matrix computation using matlab commands
+mat absorComputation(vector<double*> robPoints, vector<double*> camPoints)
+{
+	mat transmatrix(4, 4);
+	return transmatrix;
 }
 
 //Given 4, 6-length coordinate vectors in XYZWPR coordinates for the robot's points and the 4 corresponding camera points, computes the 4x4 transformation matrix
@@ -286,6 +293,7 @@ void parseBrainsight(string logPath)
 	}
 }
 
+// used to pull the camera points and robot points, calls a calibration routine and returns the resulting matrix
 mat calibrationRoutine()
 {
 	int i = 0;
@@ -476,7 +484,7 @@ int _tmain(int argc, _TCHAR* argv[])
 	int j = 0;
 	char c;
 
-	//mat transMatrix = calibrationRoutine();
+	//mat testtransMatrix = calibrationRoutine();
 
 	/*mat transMatrix(4, 4);
 	transMatrix << 0.0248456819988944 << 0.67846226913591 << 0.734214983124808 << 1129.83241064818 << endr

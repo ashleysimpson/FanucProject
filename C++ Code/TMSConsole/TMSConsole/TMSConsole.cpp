@@ -37,7 +37,6 @@ time_t lastUpdateTime;
 
 //Status of data parsed from BrainSight. 1 signifies the value is up-to-date with lastUpdate timestamp, 0 signifies out of date value
 //Variable may fall out of date if tracker is not visible by Polaris camera or last update is too old
-
 int STStatus = 0;
 int PStatus = 0;
 int CTStatus = 0;
@@ -47,7 +46,8 @@ int CBStatus = 0;
 int SRStatus = 0;
 
 //Wrapper function for LabView OPCRead
-void ReadOPC(char *OPCURL, int32_t *OPCData, int32_t len){
+void ReadOPC(char *OPCURL, int32_t *OPCData, int32_t len)
+{
 	OPCRead(OPCURL, OPCData, len);
 }
 
@@ -128,7 +128,8 @@ mat computeTransformationMatrix(vector<double*> robPoints, vector<double*> camPo
 }
 
 //Given a string, returns equivalent pointer to char
-char* stringToChar(string str){
+char* stringToChar(string str)
+{
 	const char *constCharStr = str.c_str();
 	char *charStr = new char[str.length() + 1];
 	strcpy(charStr, constCharStr);
@@ -137,7 +138,8 @@ char* stringToChar(string str){
 }
 
 //This function parses Brainsight output file for tracker coordinates and updates global variables accordingly given Brainsight log output file path
-void parseBrainsight(string logPath){
+void parseBrainsight(string logPath)
+{
 	ifstream filestream;
 	time_t now;
 	time_t old;
@@ -284,7 +286,8 @@ void parseBrainsight(string logPath){
 	}
 }
 
-mat calibrationRoutine(){
+mat calibrationRoutine()
+{
 	int i = 0;
 	int j = 0;
 	char c;
@@ -457,14 +460,15 @@ mat calibrationRoutine(){
 
 int _tmain(int argc, _TCHAR* argv[])
 {
-	string PR2URL("opc://localhost/National Instruments.NIOPCServers/Robotchan.GEPLC.$PR2");
-	string CurPosURL("opc://localhost/National Instruments.NIOPCServers/Robotchan.GEPLC.$CurPos");
+	// urls that allow connection to the main server
+	string PR2URL("opc://localhost/National Instruments.NIOPCServers/Robotchan.GELPC.$PR2");
+	string CurPosURL("opc://localhost/National Instruments.NIOPCServers/Robotchan.GELPC.$CurPos");
 	charCurPosURL = stringToChar(CurPosURL);
 	charPR2URL = stringToChar(PR2URL);
 
 	thread ReadOPCThread(ReadOPC, charCurPosURL, dataToRead, dataLength);
-	//thread parseBrainsight(parseBrainsight, "C:\\Users\\James\\Google Drive\\MAC_WIN_CONN\\output");
-	thread parseBrainsight(parseBrainsight, "C:\\Users\\James\\Desktop\\Shared\\brainsight\\output");
+	//thread parseBrainsight(parseBrainsight, "C:\\Users\\Ashley\\Desktop\\cameradata.txt");
+	thread parseBrainsight(parseBrainsight, "C:\\Users\\Ashley\\Desktop\\cameradata.txt");
 	cout << "Initializing OPCRead threads and Brainsight parsing threads...\n";
 	Sleep(3000); //Sleep to allow for thread initialization
 

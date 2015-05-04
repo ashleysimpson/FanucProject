@@ -8,8 +8,7 @@ extern "C" {
 
 /*!
  * Given OPC URL and an array of signed longs (with length of array), write 
- * the array to the OPC address e.g:
- opc://localhost/National Instruments.NIOPCServers/Robotchan.GEPLC.$PR2
+ * the array to the OPC address 
  */
 void __cdecl OPCWrite(char OPCURL[], int32_t DataToWrite[], int32_t len);
 /*!
@@ -18,7 +17,7 @@ void __cdecl OPCWrite(char OPCURL[], int32_t DataToWrite[], int32_t len);
  */
 void __cdecl OPCRead(char OPCURL[], int32_t OPCData[], int32_t len);
 /*!
- * Reads global variable for current position (must be run after OPCRead is called)
+ * Reads global variable for current position
  */
 void __cdecl ReadGlobalVars(double CurrentPosition[], int32_t len);
 

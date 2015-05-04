@@ -51,11 +51,84 @@ void ReadOPC(char *OPCURL, int32_t *OPCData, int32_t len)
 	OPCRead(OPCURL, OPCData, len);
 }
 
-// absor method of transformation matrix computation using matlab commands
-mat absorComputation(vector<double*> robPoints, vector<double*> camPoints)
+// absolute orientation method adapted from a matlab program
+mat transformationComputation(vector<double*> robPoints, vector<double*> camPoints)
 {
-	mat transmatrix(4, 4);
-	return transmatrix;
+	int transformationMatrixSize = 4;
+
+	// setup the return tranformation matrix
+	mat transformationMatrix(transformationMatrixSize, transformationMatrixSize);
+
+	int i;
+	int j;
+	
+	// initialize the return transformation matrix
+	for (i = 0; i < transformationMatrixSize; i++){
+		for (j = 0; j < transformationMatrixSize; j++){
+			if (j == transformationMatrixSize - 1) transformationMatrix(i, j) = 1;
+			else transformationMatrix(i, j) = camPoints.at(i)[j];
+		}
+	}
+
+	// create robot vectors [x y z 1] from xyz robot points
+	vector<vec> robVectors = vector<vec>();
+	for (i = 0; i < transformationMatrixSize; i++){
+		vec robVector(4);
+		robVector << robPoints.at(0)[i] << robPoints.at(1)[i] << robPoints.at(2)[i] << 1 << endr;
+		robVectors.push_back(robVector);
+	}
+
+	// create cam vectors [x y z 1] from xyz cam points
+	vector<vec> camVectors = vector<vec>();
+	for (i = 0; i < transformationMatrixSize; i++){
+		vec camVector(4);
+		camVector << camPoints.at(i)[0] << camPoints.at(i)[1] << camPoints.at(i)[2] << 1 << endr;
+		camVectors.push_back(camVector);
+	}
+
+	// take the mean across x's, y's and z's for robot coords and cam coords
+	double cRob [3];
+	double cCam [3];
+	for (i = 0; i < 3; i++) {
+		cRob[i] = ((robVectors.at(i).at(0) + robVectors.at(i).at(1) + robVectors.at(i).at(2) + robVectors.at(i).at(3)) / 4);
+		cCam[i] = ((camVectors.at(i).at(0) + camVectors.at(i).at(1) + camVectors.at(i).at(2) + camVectors.at(i).at(3)) / 4);
+	}
+
+	// remove the centroid from the collection of robot and camera points
+	double robVectorsNoCentroids[3][4];
+	double camVectorsNoCentroids[3][4];
+	for (i = 0; i < 3; i++) {
+		for (j = 0; j < 4; j++) {
+			robVectorsNoCentroids[i][j] = robVectors.at(i).at(j) - cRob[i];
+			camVectorsNoCentroids[i][j] = camVectors.at(i).at(j) - cCam[i];
+		}
+	}
+
+	// compute the quarternions for robot and camera matrices
+	mat preliminaryTransformation;
+	preliminaryTransformation << 0 << 0 << 0 << 0 << endr;
+	preliminaryTransformation << 0 << 0 << 0 << 0 << endr;
+	preliminaryTransformation << 0 << 0 << 0 << 0 << endr;
+	preliminaryTransformation << 0 << 0 << 0 << 0 << endr;
+	for (i = 0; i < 4; i++) {
+		mat quarternionRobMatrix;
+		mat quarternionCamMatrix;
+
+		quarternionRobMatrix << 0 << -1 * robVectorsNoCentroids[0][i] << -1 * robVectorsNoCentroids[1][i] << -1 * robVectorsNoCentroids[2][i] << endr;
+		quarternionRobMatrix << robVectorsNoCentroids[0][i] << 0 << robVectorsNoCentroids[2][i] << -1 * robVectorsNoCentroids[1][i] << endr;
+		quarternionRobMatrix << robVectorsNoCentroids[1][i] << -1 * robVectorsNoCentroids[2][i] << 0 << robVectorsNoCentroids[0][i] << endr;
+		quarternionRobMatrix << robVectorsNoCentroids[2][i] << robVectorsNoCentroids[1][i] << -1 * robVectorsNoCentroids[0][i] << 0 << endr;
+
+		quarternionCamMatrix << 0 << -1 * camVectorsNoCentroids[0][i] << -1 * camVectorsNoCentroids[1][i] << -1 * camVectorsNoCentroids[2][i] << endr;
+		quarternionCamMatrix << camVectorsNoCentroids[0][i] << 0 << -1 * camVectorsNoCentroids[2][i] << camVectorsNoCentroids[1][i] << endr;
+		quarternionCamMatrix << camVectorsNoCentroids[1][i] << camVectorsNoCentroids[2][i] << 0 << -1 * camVectorsNoCentroids[0][i] << endr;
+		quarternionCamMatrix << camVectorsNoCentroids[2][i] << -1 * camVectorsNoCentroids[1][i] << camVectorsNoCentroids[0][i] << 0 << endr;
+		
+		// possible issue here!
+		preliminaryTransformation = preliminaryTransformation + solve(inv(quarternionRobMatrix), quarternionCamMatrix);
+	}
+
+	return transformationMatrix;
 }
 
 //Given 4, 6-length coordinate vectors in XYZWPR coordinates for the robot's points and the 4 corresponding camera points, computes the 4x4 transformation matrix
@@ -462,7 +535,7 @@ mat calibrationRoutine()
 		cout << "\n";
 	}
 
-	mat transMatrix = computeTransformationMatrix(robPoints, camPoints);
+	mat transMatrix = transformationComputation(robPoints, camPoints);
 	return transMatrix;
 }
 
@@ -483,8 +556,8 @@ int _tmain(int argc, _TCHAR* argv[])
 	int i = 0;
 	int j = 0;
 	char c;
-
-	//mat testtransMatrix = calibrationRoutine();
+	
+	mat testtransMatrix = calibrationRoutine();
 
 	/*mat transMatrix(4, 4);
 	transMatrix << 0.0248456819988944 << 0.67846226913591 << 0.734214983124808 << 1129.83241064818 << endr

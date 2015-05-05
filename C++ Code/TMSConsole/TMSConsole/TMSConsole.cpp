@@ -161,6 +161,13 @@ mat transformationComputation(vector<double*> aPoints, vector<double*> bPoints)
 	transformationMatrix(3, 2) = 0;
 	transformationMatrix(3, 3) = 1;
 
+	for (i = 0; i < 4; i++) {
+		for (j = 0; j < 4; j++) {
+			printf("%f ", transformationMatrix(i, j));
+		}
+		printf("\n");
+	}
+
 	return transformationMatrix;
 }
 
@@ -329,7 +336,7 @@ mat calibrationRoutine()
 	int i = 0;
 	int j = 0;
 	char c;
-	/*
+	
 	vector<int*> calibrationPoints = vector<int*>();
 	vector<double*> calibrationCamPoints = vector<double*>();
 
@@ -447,10 +454,10 @@ mat calibrationRoutine()
 			}
 		}
 	}
-	*/
+	
 	vector<double*> robPoints = vector<double*>();
 	vector<double*> camPoints = vector<double*>();
-	/*
+	
 	int arraySize = 6;
 	for (i = 0; i < calibrationPoints.size(); i++){
 		double *pointArray;
@@ -477,80 +484,81 @@ mat calibrationRoutine()
 		}
 		cout << "\n";
 	}
-	*/
 
+	/* Points for testing, will be removed later
 	double *pointArray1;
 	pointArray1 = (double *)malloc(sizeof(double) * 6);
-	pointArray1[0] = 505.205;
-	pointArray1[1] = -261.580;
-	pointArray1[2] = -130.660;
+	pointArray1[0] = 494.561;
+	pointArray1[1] = -48.109;
+	pointArray1[2] = 270.981;
 	pointArray1[3] = 1;
 	pointArray1[4] = 1;
 	pointArray1[5] = 1;
 	robPoints.push_back(pointArray1);
 	double *pointArray2;
 	pointArray2 = (double *)malloc(sizeof(double) * 6);
-	pointArray2[0] = 570.484;
-	pointArray2[1] = -307.663;
-	pointArray2[2] = 53.675;
+	pointArray2[0] = 508.001;
+	pointArray2[1] = -245.872;
+	pointArray2[2] = -65.025;
 	pointArray2[3] = 1;
 	pointArray2[4] = 1;
 	pointArray2[5] = 1;
 	robPoints.push_back(pointArray2);
 	double *pointArray3;
 	pointArray3 = (double *)malloc(sizeof(double) * 6);
-	pointArray3[0] = 566.646;
-	pointArray3[1] = 2.417;
-	pointArray3[2] = -18.334;
+	pointArray3[0] = 507.995;
+	pointArray3[1] = -14.499;
+	pointArray3[2] = -152.388;
 	pointArray3[3] = 1;
 	pointArray3[4] = 1;
 	pointArray3[5] = 1;
 	robPoints.push_back(pointArray3);
 	double *pointArray4;
 	pointArray4 = (double *)malloc(sizeof(double) * 6);
-	pointArray4[0] = 652.069;
-	pointArray4[1] = 31.215;
-	pointArray4[2] = -228.615;
+	pointArray4[0] = 593.432;
+	pointArray4[1] = 104.476;
+	pointArray4[2] = 15.629;
 	pointArray4[3] = 1;
 	pointArray4[4] = 1;
 	pointArray4[5] = 1;
 	robPoints.push_back(pointArray4);
 	double *pointArray5;
 	pointArray5 = (double *)malloc(sizeof(double) * 6);
-	pointArray5[0] = 117.248;
-	pointArray5[1] = -146.387;
-	pointArray5[2] = -840.507;
+	pointArray5[0] = -180.764;
+	pointArray5[1] = 168.182;
+	pointArray5[2] = -707.868;
 	pointArray5[3] = 1;
 	pointArray5[4] = 1;
 	pointArray5[5] = 1;
 	camPoints.push_back(pointArray5);
 	double *pointArray6;
 	pointArray6 = (double *)malloc(sizeof(double) * 6);
-	pointArray6[0] = -42.577;
-	pointArray6[1] = -144.864;
-	pointArray6[2] = -719.489;
+	pointArray6[0] = 177.365;
+	pointArray6[1] = 21.326;
+	pointArray6[2] = -658.428;
 	pointArray6[3] = 1;
 	pointArray6[4] = 1;
 	pointArray6[5] = 1;
 	camPoints.push_back(pointArray6);
 	double *pointArray7;
 	pointArray7 = (double *)malloc(sizeof(double) * 6);
-	pointArray7[0] = -21.349;
-	pointArray7[1] = 97.864;
-	pointArray7[2] = -923.224;
+	pointArray7[0] = 231.436;
+	pointArray7[1] = 218.358;
+	pointArray7[2] = -797.312;
 	pointArray7[3] = 1;
 	pointArray7[4] = 1;
 	pointArray7[5] = 1;
 	camPoints.push_back(pointArray7);
 	double *pointArray8;
 	pointArray8 = (double *)malloc(sizeof(double) * 6);
-	pointArray8[0] = 194.513;
-	pointArray8[1] = 175.485;
-	pointArray8[2] = -924.891;
+	pointArray8[0] = 63.784;
+	pointArray8[1] = 359.043;
+	pointArray8[2] = -756.702;
 	pointArray8[3] = 1;
 	pointArray8[4] = 1;
 	pointArray8[5] = 1;
 	camPoints.push_back(pointArray8);
+	*/
 
 	mat transMatrix = transformationComputation(camPoints, robPoints);
 	return transMatrix;

@@ -51,28 +51,29 @@ void ReadOPC(char *OPCURL, int32_t *OPCData, int32_t len)
 	OPCRead(OPCURL, OPCData, len);
 }
 
-// absolute orientation method adapted from a matlab program
-mat transformationComputation(vector<double*> robPoints, vector<double*> camPoints)
+// absolute orientation method adapted from a matlab program (absoluteOrientationQuarternion.m) copyright ETH Zurich, Computer Vision Laboratory, Switzerland
+// http://www.mathworks.com/matlabcentral/fileexchange/22422-absolute-orientation
+mat transformationComputation(vector<double*> aPoints, vector<double*> bPoints)
 {
 	int transformationMatrixSize = 4;
 	int i;
 	int j;
 	
 	// take the mean across x's, y's and z's for robot coords and cam coords
-	double cRob [3];
-	double cCam [3];
+	double cA [3];
+	double cB [3];
 	for (i = 0; i < 3; i++) {
-		cRob[i] = ((robPoints.at(0)[i] + robPoints.at(1)[i] + robPoints.at(2)[i] + robPoints.at(3)[i]) / 4);
-		cCam[i] = ((camPoints.at(0)[i] + camPoints.at(1)[i] + camPoints.at(2)[i] + camPoints.at(3)[i]) / 4);
+		cA[i] = ((aPoints.at(0)[i] + aPoints.at(1)[i] + aPoints.at(2)[i] + aPoints.at(3)[i]) / 4);
+		cB[i] = ((bPoints.at(0)[i] + bPoints.at(1)[i] + bPoints.at(2)[i] + bPoints.at(3)[i]) / 4);
 	}
 
 	// remove the centroid from the collection of robot and camera points
-	double robVectorsNoCentroids[3][4];
-	double camVectorsNoCentroids[3][4];
+	double aVectorsNoCentroids[3][4];
+	double bVectorsNoCentroids[3][4];
 	for (i = 0; i < 3; i++) {
 		for (j = 0; j < 4; j++) {
-			robVectorsNoCentroids[i][j] = robPoints.at(j)[i] - cRob[i];
-			camVectorsNoCentroids[i][j] = camPoints.at(j)[i] - cCam[i];
+			aVectorsNoCentroids[i][j] = aPoints.at(j)[i] - cA[i];
+			bVectorsNoCentroids[i][j] = bPoints.at(j)[i] - cB[i];
 		}
 	}
 	
@@ -83,21 +84,21 @@ mat transformationComputation(vector<double*> robPoints, vector<double*> camPoin
 								<< 0 << 0 << 0 << 0 << endr
 								<< 0 << 0 << 0 << 0 << endr;
 	for (i = 0; i < 4; i++) {
-		mat quarternionRobMatrix;
-		mat quarternionCamMatrix;
+		mat quarternionAMatrix;
+		mat quarternionBMatrix;
 
-		quarternionRobMatrix	<< 0 << -1 * robVectorsNoCentroids[0][i] << -1 * robVectorsNoCentroids[1][i] << -1 * robVectorsNoCentroids[2][i] << endr
-								<< robVectorsNoCentroids[0][i] << 0 << robVectorsNoCentroids[2][i] << -1 * robVectorsNoCentroids[1][i] << endr
-								<< robVectorsNoCentroids[1][i] << -1 * robVectorsNoCentroids[2][i] << 0 << robVectorsNoCentroids[0][i] << endr
-								<< robVectorsNoCentroids[2][i] << robVectorsNoCentroids[1][i] << -1 * robVectorsNoCentroids[0][i] << 0 << endr;
+		quarternionAMatrix	<< 0 << -1 * aVectorsNoCentroids[0][i] << -1 * aVectorsNoCentroids[1][i] << -1 * aVectorsNoCentroids[2][i] << endr
+								<< aVectorsNoCentroids[0][i] << 0 << aVectorsNoCentroids[2][i] << -1 * aVectorsNoCentroids[1][i] << endr
+								<< aVectorsNoCentroids[1][i] << -1 * aVectorsNoCentroids[2][i] << 0 << aVectorsNoCentroids[0][i] << endr
+								<< aVectorsNoCentroids[2][i] << aVectorsNoCentroids[1][i] << -1 * aVectorsNoCentroids[0][i] << 0 << endr;
 
-		quarternionCamMatrix	<< 0 << -1 * camVectorsNoCentroids[0][i] << -1 * camVectorsNoCentroids[1][i] << -1 * camVectorsNoCentroids[2][i] << endr
-								<< camVectorsNoCentroids[0][i] << 0 << -1 * camVectorsNoCentroids[2][i] << camVectorsNoCentroids[1][i] << endr
-								<< camVectorsNoCentroids[1][i] << camVectorsNoCentroids[2][i] << 0 << -1 * camVectorsNoCentroids[0][i] << endr
-								<< camVectorsNoCentroids[2][i] << -1 * camVectorsNoCentroids[1][i] << camVectorsNoCentroids[0][i] << 0 << endr;
+		quarternionBMatrix	<< 0 << -1 * bVectorsNoCentroids[0][i] << -1 * bVectorsNoCentroids[1][i] << -1 * bVectorsNoCentroids[2][i] << endr
+								<< bVectorsNoCentroids[0][i] << 0 << -1 * bVectorsNoCentroids[2][i] << bVectorsNoCentroids[1][i] << endr
+								<< bVectorsNoCentroids[1][i] << bVectorsNoCentroids[2][i] << 0 << -1 * bVectorsNoCentroids[0][i] << endr
+								<< bVectorsNoCentroids[2][i] << -1 * bVectorsNoCentroids[1][i] << bVectorsNoCentroids[0][i] << 0 << endr;
 		
-		quarternionRobMatrix = trans(quarternionRobMatrix);
-		preliminaryTransformation = preliminaryTransformation + (quarternionRobMatrix*quarternionCamMatrix);
+		quarternionAMatrix = trans(quarternionAMatrix);
+		preliminaryTransformation = preliminaryTransformation + (quarternionAMatrix*quarternionBMatrix);
 	}
 
 	// get the eigenvalues for further calculation
@@ -107,21 +108,21 @@ mat transformationComputation(vector<double*> robPoints, vector<double*> camPoin
 
 	// calculate the rotational matrix
 	cx_mat rotationalMatrix;
-	cx_mat rotationalRobMatrix;
-	cx_mat rotationalCamMatrix;
+	cx_mat rotationalAMatrix;
+	cx_mat rotationalBMatrix;
 
-	rotationalRobMatrix << eigvec.at(0, 0) << -1.0 * eigvec.at(1, 0) << -1.0 * eigvec.at(2, 0) << -1.0 * eigvec.at(3, 0) << endr
+	rotationalAMatrix << eigvec.at(0, 0) << -1.0 * eigvec.at(1, 0) << -1.0 * eigvec.at(2, 0) << -1.0 * eigvec.at(3, 0) << endr
 						<< eigvec.at(1, 0) << eigvec.at(0, 0) << eigvec.at(3, 0) << -1.0 * eigvec.at(2, 0) << endr
 						<< eigvec.at(2, 0) << -1.0 * eigvec.at(3, 0) << eigvec.at(0, 0) << eigvec.at(1, 0) << endr
 						<< eigvec.at(3, 0) << eigvec.at(2, 0) << -1.0 * eigvec.at(1, 0) << eigvec.at(0, 0) << endr;
 
-	rotationalCamMatrix << eigvec.at(0, 0) << -1.0 * eigvec.at(1, 0) << -1.0 * eigvec.at(2, 0) << -1.0 * eigvec.at(3, 0) << endr
+	rotationalBMatrix << eigvec.at(0, 0) << -1.0 * eigvec.at(1, 0) << -1.0 * eigvec.at(2, 0) << -1.0 * eigvec.at(3, 0) << endr
 						<< eigvec.at(1, 0) << eigvec.at(0, 0) << -1.0 * eigvec.at(3, 0) << eigvec.at(2, 0) << endr
 						<< eigvec.at(2, 0) << eigvec.at(3, 0) << eigvec.at(0, 0) << -1.0 * eigvec.at(1, 0) << endr
 						<< eigvec.at(3, 0) << -1.0 * eigvec.at(2, 0) << eigvec.at(1, 0) << eigvec.at(0, 0) << endr;
 
-	rotationalRobMatrix = trans(rotationalRobMatrix);
-	rotationalMatrix = rotationalRobMatrix * rotationalCamMatrix;
+	rotationalAMatrix = trans(rotationalAMatrix);
+	rotationalMatrix = rotationalAMatrix * rotationalBMatrix;
 
 	// retrieve the important portion of the rotational matrix
 	cx_mat preliminaryRotational;
@@ -132,13 +133,13 @@ mat transformationComputation(vector<double*> robPoints, vector<double*> camPoin
 	reducedRotational = conv_to<mat>::from(preliminaryRotational);
 
 	// convert means into matrices
-	mat cRobMatrix;
-	mat cCamMatrix;
-	cRobMatrix << cRob[0] << endr << cRob[1] << endr << cRob[2] << endr;
-	cCamMatrix << cCam[0] << endr << cCam[1] << endr << cCam[2] << endr;
+	mat cAMatrix;
+	mat cBMatrix;
+	cAMatrix << cA[0] << endr << cA[1] << endr << cA[2] << endr;
+	cBMatrix << cB[0] << endr << cB[1] << endr << cB[2] << endr;
  
 	// retrieve the translational portion
-	mat translational = cCamMatrix - (reducedRotational * cRobMatrix);
+	mat translational = cBMatrix - (reducedRotational * cAMatrix);
 
 	// setup the returned transformation matrix
 	mat transformationMatrix(4, 4);

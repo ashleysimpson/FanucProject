@@ -337,7 +337,10 @@ mat calibrationRoutine()
 	int j = 0;
 	char c;
 	
+	// distinction for robotic control reasons
+	// points multiplied by a factor of 1000 to keep precision
 	vector<int*> calibrationPoints = vector<int*>();
+	vector<int*> preciseCalibrationPoints = vector<int*>();
 	vector<double*> calibrationCamPoints = vector<double*>();
 
 	//CalibrationPoints contains 6D coordinates in robot space separated by commas on each line
@@ -352,18 +355,22 @@ mat calibrationRoutine()
 		{
 			//for each line, make a new array of points and add it to the calibration vector
 			int *pointArray;
+			int *preciseArray;
 			double *camPointArray;
 			pointArray = (int *)malloc(sizeof(int) * dataLength);
+			preciseArray = (int *)malloc(sizeof(int) * dataLength);
 			camPointArray = (double *)malloc(sizeof(double) * 16);
 			char* charLine = stringToChar(line);
 			int i = 0;
 			char *coordinate = strtok(charLine, delimiter);
 			while (coordinate != NULL) {
-				pointArray[i] = (int)atof(coordinate);
+				pointArray[i] = (int)atof(coordinate) / 1000;
+				preciseArray[i] = (int)atof(coordinate);
 				coordinate = strtok(NULL, delimiter);
 				i++;
 			}
 			calibrationPoints.push_back(pointArray);
+			preciseCalibrationPoints.push_back(preciseArray);
 			calibrationCamPoints.push_back(camPointArray);
 		}
 	}
@@ -394,8 +401,9 @@ mat calibrationRoutine()
 	double elapsed = 0;
 	for (i = 0; i < calibrationPoints.size(); i++){
 		printf("Calibration Step %d out of 4: Moving to point %d... \n", i + 1, i + 1);
-		//Robot moves to points written to charPR2URL
-		OPCWrite(charPR2URL, calibrationPoints.at(i), dataLength);
+		// robot moves to points written to charPR2URL
+		// must move to the precise position
+		OPCWrite(charPR2URL, preciseCalibrationPoints.at(i), dataLength);
 		time(&now);
 		time(&old);
 		while (true){
@@ -421,15 +429,18 @@ mat calibrationRoutine()
 					}
 				}
 				if (fail == 0) {
+					Sleep(3000); // keeps calibration stopped for calculation purposes
+
 					//Record timestamp of when we arrived to CalibrationPoint
 					time(&arrivalTime);
 					//Period at which notifications appear
-					int notificationPeriod = 1;
+					int notificationPeriod = 3;
 					int notificationTimer = notificationPeriod;
 					printf("Arrived to Point at: %s", asctime(localtime(&arrivalTime)));
 					printf("Last Brainsight Update at: %s", asctime(&lastUpdate));
 					while (difftime(arrivalTime, lastUpdateTime) > 0 || CTStatus != 1){ //busywait until brainsight data is up to date
 						time(&notificationTime);
+						
 						//notify user of status of point every 2 seconds
 						if (difftime(notificationTime, arrivalTime) > notificationTimer){
 							if (difftime(arrivalTime, lastUpdateTime) > 0){
@@ -440,7 +451,6 @@ mat calibrationRoutine()
 							if (CTStatus != 1){
 								cout << "Notification: Coil Tracker is in failed status. Please assure coil is visible to Polaris.\n";
 							}
-							notificationTimer = notificationTimer + notificationPeriod;
 						}
 					}
 					m.lock();
@@ -485,81 +495,6 @@ mat calibrationRoutine()
 		cout << "\n";
 	}
 
-	/* Points for testing, will be removed later
-	double *pointArray1;
-	pointArray1 = (double *)malloc(sizeof(double) * 6);
-	pointArray1[0] = 494.561;
-	pointArray1[1] = -48.109;
-	pointArray1[2] = 270.981;
-	pointArray1[3] = 1;
-	pointArray1[4] = 1;
-	pointArray1[5] = 1;
-	robPoints.push_back(pointArray1);
-	double *pointArray2;
-	pointArray2 = (double *)malloc(sizeof(double) * 6);
-	pointArray2[0] = 508.001;
-	pointArray2[1] = -245.872;
-	pointArray2[2] = -65.025;
-	pointArray2[3] = 1;
-	pointArray2[4] = 1;
-	pointArray2[5] = 1;
-	robPoints.push_back(pointArray2);
-	double *pointArray3;
-	pointArray3 = (double *)malloc(sizeof(double) * 6);
-	pointArray3[0] = 507.995;
-	pointArray3[1] = -14.499;
-	pointArray3[2] = -152.388;
-	pointArray3[3] = 1;
-	pointArray3[4] = 1;
-	pointArray3[5] = 1;
-	robPoints.push_back(pointArray3);
-	double *pointArray4;
-	pointArray4 = (double *)malloc(sizeof(double) * 6);
-	pointArray4[0] = 593.432;
-	pointArray4[1] = 104.476;
-	pointArray4[2] = 15.629;
-	pointArray4[3] = 1;
-	pointArray4[4] = 1;
-	pointArray4[5] = 1;
-	robPoints.push_back(pointArray4);
-	double *pointArray5;
-	pointArray5 = (double *)malloc(sizeof(double) * 6);
-	pointArray5[0] = -180.764;
-	pointArray5[1] = 168.182;
-	pointArray5[2] = -707.868;
-	pointArray5[3] = 1;
-	pointArray5[4] = 1;
-	pointArray5[5] = 1;
-	camPoints.push_back(pointArray5);
-	double *pointArray6;
-	pointArray6 = (double *)malloc(sizeof(double) * 6);
-	pointArray6[0] = 177.365;
-	pointArray6[1] = 21.326;
-	pointArray6[2] = -658.428;
-	pointArray6[3] = 1;
-	pointArray6[4] = 1;
-	pointArray6[5] = 1;
-	camPoints.push_back(pointArray6);
-	double *pointArray7;
-	pointArray7 = (double *)malloc(sizeof(double) * 6);
-	pointArray7[0] = 231.436;
-	pointArray7[1] = 218.358;
-	pointArray7[2] = -797.312;
-	pointArray7[3] = 1;
-	pointArray7[4] = 1;
-	pointArray7[5] = 1;
-	camPoints.push_back(pointArray7);
-	double *pointArray8;
-	pointArray8 = (double *)malloc(sizeof(double) * 6);
-	pointArray8[0] = 63.784;
-	pointArray8[1] = 359.043;
-	pointArray8[2] = -756.702;
-	pointArray8[3] = 1;
-	pointArray8[4] = 1;
-	pointArray8[5] = 1;
-	camPoints.push_back(pointArray8);
-	*/
-
 	mat transMatrix = transformationComputation(camPoints, robPoints);
 	return transMatrix;
 }
@@ -571,10 +506,11 @@ int _tmain(int argc, _TCHAR* argv[])
 	string CurPosURL("opc://localhost/National Instruments.NIOPCServers/Robotchan.GELPC.$CurPos");
 	charCurPosURL = stringToChar(CurPosURL);
 	charPR2URL = stringToChar(PR2URL);
+	int precisionFactor = 1000; // important variable for writing to robot position registers
 
 	thread ReadOPCThread(ReadOPC, charCurPosURL, dataToRead, dataLength);
 	//thread parseBrainsight(parseBrainsight, "C:\\Users\\Ashley\\Desktop\\cameradata.txt");
-	thread parseBrainsight(parseBrainsight, "C:\\Users\\Ashley\\Desktop\\cameradata.txt");
+	thread parseBrainsight(parseBrainsight, "Z:\\cameradata.txt");
 	cout << "Initializing OPCRead threads and Brainsight parsing threads...\n";
 	Sleep(3000); //Sleep to allow for thread initialization
 
@@ -582,41 +518,8 @@ int _tmain(int argc, _TCHAR* argv[])
 	int j = 0;
 	char c;
 	
-	mat testtransMatrix = calibrationRoutine();
-
-	/*mat transMatrix(4, 4);
-	transMatrix << 0.0248456819988944 << 0.67846226913591 << 0.734214983124808 << 1129.83241064818 << endr
-		<< -0.0340226467179108 << 0.734590116827388 << -0.677657597736374 << -574.051305674604 << endr
-		<< -0.999112181687481 << -0.00814307180835949 << 0.0413344745364672 << 198.634541169709 << endr
-		<< 0 << 0 << 0 << 1 << endr;
-		*/
-	double matrixArray[16] = { 0 };
-	ifstream filestream("TransformationMatrix.txt");
-	string line;
-	const char delimiter[2] = ",";
-	while (filestream.good())
-	{
-		while (getline(filestream, line))
-		{
-			//for each line, make a new array of points and add it to the calibration vector
-			size_t sz;
-			char* charLine = stringToChar(line);
-			int i = 0;
-			char *matrixValue = strtok(charLine, delimiter);
-			while (matrixValue != NULL) {
-				matrixArray[i] = stod(string(matrixValue), &sz);
-				matrixValue = strtok(NULL, delimiter);
-				i++;
-			}
-		}
-	}
-
-	mat transMatrix(4, 4);
-	transMatrix << matrixArray[0] << matrixArray[1] << matrixArray[2] << matrixArray[3] << endr
-		<< matrixArray[4] << matrixArray[5] << matrixArray[6] << matrixArray[7] << endr
-		<< matrixArray[8] << matrixArray[9] << matrixArray[10] << matrixArray[11] << endr
-		<< matrixArray[12] << matrixArray[13] << matrixArray[14] << matrixArray[15] << endr;
-
+	// transformation matrix calculation
+	mat transMatrix = calibrationRoutine();
 
 	time_t now;
 	time_t old;
@@ -702,11 +605,11 @@ int _tmain(int argc, _TCHAR* argv[])
 		//int robotDestination[6] = { 0, 0, 0, 45, -86,131 };
 		int robotDestination[6] = { 0, 0, 0, 0, 0, 0 };
 		for (i = 0; i < 3; i++){
-			robotDestination[i] = round(resultVector(i));
+			robotDestination[i] = resultVector(i) * precisionFactor;
 		}
 		
 		for (i = 3; i < 6; i++){
-			robotDestination[i] = round(resultOrientation(i-3));
+			robotDestination[i] = resultOrientation(i-3) * precisionFactor;
 		}
 
 		OPCWrite(charPR2URL, robotDestination, 6);

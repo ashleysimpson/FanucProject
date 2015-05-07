@@ -185,6 +185,7 @@ char* stringToChar(string str)
 void parseBrainsight(string logPath)
 {
 	ifstream filestream;
+	bool openFile = false;
 	time_t now;
 	time_t old;
 	time(&now);
@@ -203,7 +204,19 @@ void parseBrainsight(string logPath)
 		if (timeDifference < period) continue;
 		else{
 			time(&old);
-			filestream.open(logPath);
+
+			// deal with nothing written issue
+			openFile = false;
+			while (!openFile) {
+				filestream.open(logPath);
+				if (!(filestream.peek() == std::ifstream::traits_type::eof())) {
+					openFile = true;
+				} else {
+					filestream.close();
+					filestream.clear();
+				}
+			}
+
 			while (filestream.good())
 			{
 				m.lock();
@@ -510,7 +523,7 @@ int _tmain(int argc, _TCHAR* argv[])
 
 	thread ReadOPCThread(ReadOPC, charCurPosURL, dataToRead, dataLength);
 	//thread parseBrainsight(parseBrainsight, "C:\\Users\\Ashley\\Desktop\\cameradata.txt");
-	thread parseBrainsight(parseBrainsight, "Z:\\cameradata.txt");
+	thread parseBrainsight(parseBrainsight, "Z:\cameradata.txt");
 	cout << "Initializing OPCRead threads and Brainsight parsing threads...\n";
 	Sleep(3000); //Sleep to allow for thread initialization
 

@@ -223,6 +223,7 @@ void MainWindow::on_resetButton_clicked()
     ui->streamingLabel->setStyleSheet(greyTextBox);
     ui->pointsLabel->setStyleSheet(greyTextBox);
     ui->checkConnectionLabel->setStyleSheet(greyTextBoxSmaller);
+    ui->streamingPushButton->setText("Begin Streaming");
     ui->checkConnectionLabel->setText("Not Checked...");
     ui->pointsLabel->setText("Not Submitted...");
     ui->streamingLabel->setText("Not Streaming...");

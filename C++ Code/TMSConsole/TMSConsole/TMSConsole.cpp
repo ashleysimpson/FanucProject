@@ -604,18 +604,32 @@ int _tmain(int argc, _TCHAR* argv[])
 		vec resultVector(3);
 		vec resultOrientation(3);
 		resultVector << result(0,3) << result(1,3) << result(2,3) << endr;
+
+		/* original 
 		if (result(2,1) > 0.998){
 			resultOrientation << 0 << atan2(result(2, 0), result(2, 2)) * 180 / M_PI << 90 << endr;
 		}
-		else if (result(2, 1) < -0.998){
+		else if (result(2,1) < -0.998){
 			resultOrientation << 0 << atan2(result(2, 0), result(2, 2)) * 180 / M_PI << -90 << endr;
 		}
 		else{
 			resultOrientation << atan2(-result(1, 2), result(1, 1)) * 180 / M_PI << atan2(-result(2, 0), result(0, 0)) * 180 / M_PI << asin(result(1, 0)) * 180 / M_PI << endr;
 		}
+		*/
+
+		if (result(1, 0) > 0.998){
+			resultOrientation << 0 << atan2(result(0, 2), result(2, 2)) * 180 / M_PI << 90 << endr;
+		}
+		else if (result(1, 0) < -0.998){
+			resultOrientation << 0 << atan2(result(0, 2), result(2, 2)) * 180 / M_PI << -90 << endr;
+		}
+		else{
+			resultOrientation << atan2(-result(1, 2), result(1, 1)) * 180 / M_PI << atan2(-result(2, 0), result(0, 0)) * 180 / M_PI << asin(result(1, 0)) * 180 / M_PI << endr;
+		}
+
 		result.print("result:");
 		resultOrientation.print("resultOrientation:");
-		//int robotDestination[6] = { 0, 0, 0, 45, -86,131 };
+		//int robotDestination[6] = { 0, 0, 0, 45, -86, 131 };
 		int robotDestination[6] = { 0, 0, 0, 0, 0, 0 };
 		for (i = 0; i < 3; i++){
 			robotDestination[i] = resultVector(i) * precisionFactor;

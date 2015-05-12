@@ -615,17 +615,26 @@ int _tmain(int argc, _TCHAR* argv[])
 		else{
 			resultOrientation << atan2(-result(1, 2), result(1, 1)) * 180 / M_PI << atan2(-result(2, 0), result(0, 0)) * 180 / M_PI << asin(result(1, 0)) * 180 / M_PI << endr;
 		}
-		*/
+		
 
 		if (result(1, 0) > 0.998){
 			resultOrientation << 0 << atan2(result(0, 2), result(2, 2)) * 180 / M_PI << 90 << endr;
 		}
 		else if (result(1, 0) < -0.998){
 			resultOrientation << 0 << atan2(result(0, 2), result(2, 2)) * 180 / M_PI << -90 << endr;
-		}
+		}  
 		else{
 			resultOrientation << atan2(-result(1, 2), result(1, 1)) * 180 / M_PI << atan2(-result(2, 0), result(0, 0)) * 180 / M_PI << asin(result(1, 0)) * 180 / M_PI << endr;
-		}
+		} */
+
+		double c2 = sqrt(result(0, 0)*result(0, 0) + result(0, 1)*result(0, 1));
+		double w = atan2(result(1, 2), result(2, 2));
+		double p = atan2(-result(0, 2), c2);
+		double c1 = cos(w);
+		double s1 = sin(w);
+		double r = atan2((s1*result(2, 0) - c1*result(1, 0)), (c1*result(1, 1) - s1*result(2, 1)));
+
+		resultOrientation << w * (180 / M_PI) << p * (180 / M_PI) << r * (180 / M_PI) << endr;
 
 		result.print("result:");
 		resultOrientation.print("resultOrientation:");

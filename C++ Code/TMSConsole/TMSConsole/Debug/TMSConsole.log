@@ -1,7 +1,7 @@
-﻿Build started 5/11/2015 9:27:40 AM.
-     1>Project "C:\Users\amir\Desktop\FanucProject\C++ Code\TMSConsole\TMSConsole\TMSConsole.vcxproj" on node 2 (Build target(s)).
+﻿Build started 5/12/2015 3:30:32 PM.
+     1>Project "C:\Users\amir\Desktop\FanucProject\C++ Code\TMSConsole\TMSConsole\TMSConsole.vcxproj" on node 2 (Rebuild target(s)).
      1>ClCompile:
-         C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\CL.exe /c /I"C:\armadillo-4.650.4\include" /ZI /nologo /W3 /WX- /Od /Oy- /D WIN32 /D _DEBUG /D _CONSOLE /D _LIB /D _UNICODE /D UNICODE /Gm /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Fo"Debug\\" /Fd"Debug\vc120.pdb" /Gd /TP /analyze- /errorReport:prompt TMSConsole.cpp
+         C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\CL.exe /c /I"C:\armadillo-4.650.4\include" /ZI /nologo /W3 /WX- /Od /Oy- /D WIN32 /D _DEBUG /D _CONSOLE /D _LIB /D _UNICODE /D UNICODE /Gm /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Fo"Debug\\" /Fd"Debug\vc120.pdb" /Gd /TP /analyze- /errorReport:prompt stdafx.cpp TMSConsole.cpp
          TMSConsole.cpp
      1>c:\program files (x86)\microsoft visual studio 12.0\vc\include\stdint.h(57): warning C4005: 'INT8_MIN' : macro redefinition
                  c:\program files (x86)\national instruments\labview 2014\cintools\fundtypes.h(291) : see previous definition of 'INT8_MIN'
@@ -62,17 +62,19 @@
                  c:\program files (x86)\microsoft visual studio 12.0\vc\include\time.h(174) : see declaration of 'asctime'
      1>c:\users\amir\desktop\fanucproject\c++ code\tmsconsole\tmsconsole\tmsconsole.cpp(562): warning C4996: 'asctime': This function or variable may be unsafe. Consider using asctime_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
                  c:\program files (x86)\microsoft visual studio 12.0\vc\include\time.h(174) : see declaration of 'asctime'
-     1>c:\users\amir\desktop\fanucproject\c++ code\tmsconsole\tmsconsole\tmsconsole.cpp(635): warning C4244: '=' : conversion from 'double' to 'int', possible loss of data
-     1>c:\users\amir\desktop\fanucproject\c++ code\tmsconsole\tmsconsole\tmsconsole.cpp(639): warning C4244: '=' : conversion from 'double' to 'int', possible loss of data
+     1>c:\users\amir\desktop\fanucproject\c++ code\tmsconsole\tmsconsole\tmsconsole.cpp(644): warning C4244: '=' : conversion from 'double' to 'int', possible loss of data
+     1>c:\users\amir\desktop\fanucproject\c++ code\tmsconsole\tmsconsole\tmsconsole.cpp(648): warning C4244: '=' : conversion from 'double' to 'int', possible loss of data
      1>c:\users\amir\desktop\fanucproject\c++ code\tmsconsole\tmsconsole\tmsconsole.cpp(538): warning C4101: 'old' : unreferenced local variable
      1>c:\users\amir\desktop\fanucproject\c++ code\tmsconsole\tmsconsole\tmsconsole.cpp(537): warning C4101: 'now' : unreferenced local variable
      1>c:\users\amir\desktop\fanucproject\c++ code\tmsconsole\tmsconsole\tmsconsole.cpp(532): warning C4101: 'c' : unreferenced local variable
+         stdafx.cpp
+         Generating Code...
        Link:
          C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\link.exe /ERRORREPORT:PROMPT /OUT:"C:\Users\amir\Desktop\FanucProject\C++ Code\TMSConsole\Debug\TMSConsole.exe" /INCREMENTAL /NOLOGO /LIBPATH:C:\MinGW\bin /LIBPATH:"C:\armadillo-4.650.4\examples\lib_win64" /LIBPATH:"C:\Program Files\MATLAB\R2014b\extern\lib\win64\microsoft" OPCFunctions.lib libblas.lib liblapack.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /DEBUG /PDB:"C:\Users\amir\Desktop\FanucProject\C++ Code\TMSConsole\Debug\TMSConsole.pdb" /SUBSYSTEM:CONSOLE /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"C:\Users\amir\Desktop\FanucProject\C++ Code\TMSConsole\Debug\TMSConsole.lib" /MACHINE:X86 Debug\stdafx.obj
          Debug\TMSConsole.obj
          TMSConsole.vcxproj -> C:\Users\amir\Desktop\FanucProject\C++ Code\TMSConsole\Debug\TMSConsole.exe
-     1>Done Building Project "C:\Users\amir\Desktop\FanucProject\C++ Code\TMSConsole\TMSConsole\TMSConsole.vcxproj" (Build target(s)).
+     1>Done Building Project "C:\Users\amir\Desktop\FanucProject\C++ Code\TMSConsole\TMSConsole\TMSConsole.vcxproj" (Rebuild target(s)).
 
 Build succeeded.
 
-Time Elapsed 00:00:11.18
+Time Elapsed 00:00:07.63

@@ -1,9 +1,11 @@
 import math
 
-qw = -0.335713176869
-qx = 0.139943020146
-qy = 0.168033399925
-qz = 0.916230047532
+qw = 0.101310386222
+qx = 0.0436887824215
+qy = -0.0400768118879
+qz = 0.993086728337
+
+conversion = 180 / math.pi
 
 test = qx*qy + qz*qw;
 
@@ -25,9 +27,9 @@ else:
 	bank = math.atan2(2*qx*qw-2*qy*qz , 1 - 2*sqx - 2*sqz)
 
 print "Normalised: "
-print heading
-print attitude
-print str(bank) + "\n"
+print heading * conversion
+print attitude * conversion
+print str(bank * conversion) + "\n"
 
 sqx = qx*qx
 sqy = qy*qy
@@ -50,6 +52,6 @@ else:
 	bank = math.atan2(2*qx*qw-2*qy*qz , -sqx + sqy - sqz + sqw)
 
 print "Non-Normalised: "
-print heading
-print attitude
-print bank
+print heading * conversion
+print attitude * conversion
+print bank * conversion

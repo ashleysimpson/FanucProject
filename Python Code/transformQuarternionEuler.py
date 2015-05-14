@@ -1,9 +1,14 @@
 import math
 
-qw = 0.0791
-qx = -0.0477
-qy = 0.0893
-qz = 0.9917
+qw = 0.109893169679
+qx = 0.677588911418
+qy = 0.1233869506
+qz = 0.716639678586
+
+qw = 0.435149393694
+qx = 0.564496164538
+qy = -0.0630037133566
+qz = 0.698583966493
 
 conversion = 180 / math.pi
 
@@ -106,11 +111,59 @@ while (allSixConversions < 6):
 		p2 = qz
 		p3 = qy
 	# YXZ
-	else:
+	elif (allSixConversions == 5):
 		print "YXZ"
 		e = 1
 		p0 = qw
 		p1 = qy
+		p2 = qx
+		p3 = qz
+	# XZX
+	elif (allSixConversions == 6):
+		print "XZX"
+		e = 1
+		p0 = qw
+		p1 = qx
+		p2 = qz
+		p3 = qx
+	# XYX
+	elif (allSixConversions == 7):
+		print "XYX"
+		e = 1
+		p0 = qw
+		p1 = qx
+		p2 = qy
+		p3 = qx
+	# YXY
+	elif (allSixConversions == 8):
+		print "YXY"
+		e = 1
+		p0 = qw
+		p1 = qy
+		p2 = qx
+		p3 = qy
+	# YZY
+	elif (allSixConversions == 9):
+		print "YZY"
+		e = 1
+		p0 = qw
+		p1 = qy
+		p2 = qz
+		p3 = qy
+	# ZYZ
+	elif (allSixConversions == 10):
+		print "ZYZ"
+		e = 1
+		p0 = qw
+		p1 = qz
+		p2 = qy
+		p3 = qz
+	# ZXZ
+	else:
+		print "ZXZ"
+		e = 1
+		p0 = qw
+		p1 = qz
 		p2 = qx
 		p3 = qz
 

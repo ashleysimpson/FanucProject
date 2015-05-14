@@ -10,27 +10,27 @@ m20 = 0.921957307246059
 m21 = 0.386522650005368
 m22 = -0.024383193555208
 
-m00 = -0.070831976870960
-m01 = 0.204724917157531
-m02 = 0.976253511767251
-m10 = 0.192882511470353
-m11 = -0.957428623020512
-m12 = 0.214771611380260
-m20 = 0.978662045393321
-m21 = 0.203515007854179
-m22 = 0.028327935350747
+m00 = -0.037098
+m01 = -0.015267
+m02 = 0.999195
+m10 = 0.388818
+m11 = -0.921314
+m12 = 0.000359 
+m20 = 0.920567
+m21 = 0.388517
+m22 = 0.040115
 
-if (m10 > 0.998):
-	heading = math.atan2(m02,m22);
-	attitude = math.pi/2;
-	bank = 0;
-elif (m10 < -0.998):
-	heading = math.atan2(m02,m22);
-	attitude = -math.pi/2;
-	bank = 0;
+if (m21 > 0.998):
+	heading = 0
+	attitude = math.atan2(m20,m22)
+	bank = math.pi/2
+elif (m21 < -0.998):
+	heading = 0
+	attitude = math.atan2(m20,m22)
+	bank = math.pi/2
 else:
-	heading = math.atan2(-m20,m00);
-	bank = math.atan2(-m12,m11);
+	heading = math.atan2(-m12,m11);
+	bank = math.atan2(-m20,m00);
 	attitude = math.asin(m10);
 
 conversion = 180/math.pi

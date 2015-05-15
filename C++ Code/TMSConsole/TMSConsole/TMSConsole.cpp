@@ -576,6 +576,9 @@ int _tmain(int argc, _TCHAR* argv[])
 				}
 				notificationTimer = notificationTimer + notificationPeriod;
 			}
+
+			// prevents repeated messages appearing on console
+			Sleep(1000);
 		}
 		
 		printf("brainSightST:");
@@ -608,8 +611,28 @@ int _tmain(int argc, _TCHAR* argv[])
 		transMatrix.print("transMatrix");
 		pointMatrix.print("pointMatrix");
 
+		// added to test translation calculation
+		mat translation(4, 4);
 
-		mat result = transMatrix*pointMatrix;
+		translation(0, 0) = 1;
+		translation(1, 0) = 0;
+		translation(2, 0) = 0;
+		translation(3, 0) = 0;
+		translation(0, 1) = 0;
+		translation(1, 1) = 1;
+		translation(2, 1) = 0;
+		translation(3, 1) = 0;
+		translation(0, 2) = 0;
+		translation(1, 2) = 0;
+		translation(2, 2) = 1;
+		translation(3, 2) = 0;
+		translation(0, 3) = 136.164183;
+		translation(1, 3) = 1.396218;
+		translation(2, 3) = -51.215305;
+		translation(3, 3) = 1;
+
+		mat translated = translation*pointMatrix;
+		mat result = transMatrix*translated;
 		vec resultVector(3);
 		vec resultOrientation(3);
 		resultVector << result(0,3) << result(1,3) << result(2,3) << endr;

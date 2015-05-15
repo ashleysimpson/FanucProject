@@ -450,8 +450,10 @@ mat calibrationRoutine()
 					int notificationPeriod = 3;
 					int notificationTimer = notificationPeriod;
 					printf("Arrived to Point at: %s", asctime(localtime(&arrivalTime)));
+
 					printf("Last Brainsight Update at: %s", asctime(&lastUpdate));
-					while (difftime(arrivalTime, lastUpdateTime) > 0 || CTStatus != 1){ //busywait until brainsight data is up to date
+					// CHANGED THIS FOR POINTER TRACKING
+					while (difftime(arrivalTime, lastUpdateTime) > 0 || PStatus != 1){ //busywait until brainsight data is up to date
 						time(&notificationTime);
 						
 						//notify user of status of point every 2 seconds
@@ -467,8 +469,9 @@ mat calibrationRoutine()
 						}
 					}
 					m.lock();
+					// CHANGED THIS TO TRACK POINTER
 					for (j = 0; j < 16; j++){
-						calibrationCamPoints.at(i)[j] = brainSightCT[j];
+						calibrationCamPoints.at(i)[j] = brainSightP[j];
 					}
 					m.unlock();
 					cout << "Brainsight data up-to-date and Camera Point retrieved. Continuing calibration... \n";
@@ -525,7 +528,13 @@ int _tmain(int argc, _TCHAR* argv[])
 	//thread parseBrainsight(parseBrainsight, "C:\\Users\\Ashley\\Desktop\\cameradata.txt");
 	thread parseBrainsight(parseBrainsight, "Z:\cameradata.txt");
 	cout << "Initializing OPCRead threads and Brainsight parsing threads...\n";
-	Sleep(3000); //Sleep to allow for thread initialization
+	
+	// extra logic to wait for user ready
+	printf("Please hit enter to continue...");
+	char input = '0';
+	while (input != '\n') {
+		cin.get(input);
+	}
 
 	int i = 0;
 	int j = 0;

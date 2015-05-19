@@ -588,14 +588,6 @@ int _tmain(int argc, _TCHAR* argv[])
 			printf("%f ", brainSightST[j]);
 		}
 		
-		/*
-		printf("brainSightCT:");
-		m.lock();
-		for (j = 0; j < 16; j++){
-			pointArray[j] = brainSightCT[j];
-			printf("%f ", pointArray[j]);
-		}
-		*/
 		m.unlock();
 		printf("Brainsight data up-to-date and Subject Tracker Camera Point retrieved. \n");
 
@@ -611,32 +603,10 @@ int _tmain(int argc, _TCHAR* argv[])
 		transMatrix.print("transMatrix");
 		pointMatrix.print("pointMatrix");
 
-		// added to test translation calculation
-		mat translation(4, 4);
-
-		translation(0, 0) = 1;
-		translation(1, 0) = 0;
-		translation(2, 0) = 0;
-		translation(3, 0) = 0;
-		translation(0, 1) = 0;
-		translation(1, 1) = 1;
-		translation(2, 1) = 0;
-		translation(3, 1) = 0;
-		translation(0, 2) = 0;
-		translation(1, 2) = 0;
-		translation(2, 2) = 1;
-		translation(3, 2) = 0;
-		translation(0, 3) = 136.164183;
-		translation(1, 3) = 1.396218;
-		translation(2, 3) = -51.215305;
-		translation(3, 3) = 1;
-
-		mat translated = translation*pointMatrix;
-		mat result = transMatrix*translated;
+		mat result = transMatrix*pointMatrix;
 		vec resultVector(3);
 		vec resultOrientation(3);
 		resultVector << result(0,3) << result(1,3) << result(2,3) << endr;
-
 		
 		if (result(2,1) > 0.998){
 			resultOrientation << 0 << atan2(result(2, 0), result(2, 2)) * 180 / M_PI << 90 << endr;

@@ -467,6 +467,8 @@ mat calibrationRoutine()
 								cout << "Notification: Coil Tracker is in failed status. Please assure coil is visible to Polaris.\n";
 							}
 						}
+						
+						Sleep(1000);
 					}
 					m.lock();
 					// CHANGED THIS TO TRACK POINTER
@@ -550,11 +552,49 @@ int _tmain(int argc, _TCHAR* argv[])
 
 	//getchar();
 	transMatrix.print("transMatrix:");
+
+	// signal to user that they can use points or follow subject tracker
+	printf("Please indicate whether you want to follow input points or the subject tracker\n");
+	bool userInputAccepted = false;
+	int trackingMode = 0;
+
+	// continue to query user until correct input accepted
+	while (!userInputAccepted) {
+		printf("Enter 1 to follow the subject tracker\n");
+		printf("Or enter 2 to follow points... \n");
+
+		int userInput;
+		cin >> userInput;
+
+		// fix needed here!
+		if (!cin) {
+			cin.clear();
+			printf("Undefined input, please follow instructions...\n");
+			userInputAccepted = false;
+			continue;
+		}
+
+		if (userInput == 1) {
+			printf("Following ST Tracker...\n");
+			trackingMode = 1;
+			userInputAccepted = true;
+		}
+		else if (userInput == 2) {
+			printf("Following points...\n");
+			trackingMode = 2;
+			userInputAccepted = true;
+		}
+		else {
+			printf("Undefined input, please follow instructions...\n");
+			userInputAccepted = false;
+		}
+	}
+
 	double pointArray[16]; //contains Brainsight Subject Tracker point (4x4 matrix)
+
 	while (true){
-		printf("Following ST Tracker: \n");
 		time(&arrivalTime);
-		printf("Retrieving data: Do not move Subject Tracker. \n");
+		printf("Retrieving data: Do not move. \n");
 		//Period at which notifications appear
 		int notificationPeriod = 1;
 		int notificationTimer = notificationPeriod;
@@ -572,7 +612,7 @@ int _tmain(int argc, _TCHAR* argv[])
 				}
 				if (STStatus != 1){
 				//if (CTStatus != 1){
-					cout << "Notification: Subject Tracker is in failed status. Please assure coil is visible to Polaris.\n";
+					cout << "Notification: Subject Tracker is in failed status. Please assure fiducial array is visible to Polaris.\n";
 				}
 				notificationTimer = notificationTimer + notificationPeriod;
 			}
@@ -580,14 +620,29 @@ int _tmain(int argc, _TCHAR* argv[])
 			// prevents repeated messages appearing on console
 			Sleep(1000);
 		}
-		
-		printf("brainSightST:");
-		m.lock();
-		for (j = 0; j < 16; j++){
-			pointArray[j] = brainSightST[j];
-			printf("%f ", brainSightST[j]);
+
+		// get points accordingly, depending on the tracking mode
+		if (trackingMode == 1) {
+			// get the st tracker position and move towards it
+			printf("brainSightST:");
+			m.lock();
+			for (j = 0; j < 16; j++){
+				pointArray[j] = brainSightST[j];
+				printf("%f ", brainSightST[j]);
+			}
 		}
-		
+		else {
+			// get the subject registration matrix for poin 
+			printf("subject registration:");
+			m.lock();
+			for (j = 0; j < 16; j++){
+				pointArray[j] = brainSightSRMatrix[j];
+				printf("%f ", brainSightSRMatrix[j]);
+			}
+
+			return 1;
+		}
+
 		m.unlock();
 		printf("Brainsight data up-to-date and Subject Tracker Camera Point retrieved. \n");
 

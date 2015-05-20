@@ -563,23 +563,17 @@ int _tmain(int argc, _TCHAR* argv[])
 		printf("Enter 1 to follow the subject tracker\n");
 		printf("Or enter 2 to follow points... \n");
 
-		int userInput;
-		cin >> userInput;
+		// retrieve user input and check action
+		string userInput;
+		getline(cin, userInput);
+		int value = atoi(userInput.c_str());
 
-		// fix needed here!
-		if (!cin) {
-			cin.clear();
-			printf("Undefined input, please follow instructions...\n");
-			userInputAccepted = false;
-			continue;
-		}
-
-		if (userInput == 1) {
+		if (value == 1) {
 			printf("Following ST Tracker...\n");
 			trackingMode = 1;
 			userInputAccepted = true;
 		}
-		else if (userInput == 2) {
+		else if (value == 2) {
 			printf("Following points...\n");
 			trackingMode = 2;
 			userInputAccepted = true;
@@ -588,6 +582,12 @@ int _tmain(int argc, _TCHAR* argv[])
 			printf("Undefined input, please follow instructions...\n");
 			userInputAccepted = false;
 		}
+	}
+
+	// TODO: point following not fully implemented
+	if (trackingMode == 2) {
+		printf("Point following not implemented!");
+		return 1;
 	}
 
 	double pointArray[16]; //contains Brainsight Subject Tracker point (4x4 matrix)
@@ -621,28 +621,15 @@ int _tmain(int argc, _TCHAR* argv[])
 			Sleep(1000);
 		}
 
-		// get points accordingly, depending on the tracking mode
-		if (trackingMode == 1) {
-			// get the st tracker position and move towards it
-			printf("brainSightST:");
-			m.lock();
-			for (j = 0; j < 16; j++){
-				pointArray[j] = brainSightST[j];
-				printf("%f ", brainSightST[j]);
-			}
+		
+		// get the st tracker position and move towards it
+		printf("brainSightST:");
+		m.lock();
+		for (j = 0; j < 16; j++){
+			pointArray[j] = brainSightST[j];
+			printf("%f ", brainSightST[j]);
 		}
-		else {
-			// get the subject registration matrix for poin 
-			printf("subject registration:");
-			m.lock();
-			for (j = 0; j < 16; j++){
-				pointArray[j] = brainSightSRMatrix[j];
-				printf("%f ", brainSightSRMatrix[j]);
-			}
-
-			return 1;
-		}
-
+	
 		m.unlock();
 		printf("Brainsight data up-to-date and Subject Tracker Camera Point retrieved. \n");
 

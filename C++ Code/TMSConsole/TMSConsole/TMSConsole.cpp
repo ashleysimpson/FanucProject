@@ -51,6 +51,89 @@ void ReadOPC(char *OPCURL, int32_t *OPCData, int32_t len)
 	OPCRead(OPCURL, OPCData, len);
 }
 
+//Given a string, returns equivalent pointer to char
+char* stringToChar(string str)
+{
+	const char *constCharStr = str.c_str();
+	char *charStr = new char[str.length() + 1];
+	strcpy(charStr, constCharStr);
+	charStr[str.length()] = '\0';
+	return charStr;
+}
+
+int retrieveUserInput()
+{
+	// signal to user that they can use points or follow subject tracker
+	printf("Please indicate whether you want to follow input points or the subject tracker\n");
+	bool userInputAccepted = false;
+	int trackingMode = 0;
+
+	// continue to query user until correct input accepted
+	while (!userInputAccepted) {
+		printf("Enter 1 to follow the subject tracker\n");
+		printf("Or enter 2 to follow points... \n");
+
+		// retrieve user input and check action
+		string userInput;
+		getline(cin, userInput);
+		int value = atoi(userInput.c_str());
+
+		if (value == 1) {
+			printf("Following ST Tracker...\n");
+			trackingMode = 1;
+			userInputAccepted = true;
+		}
+		else if (value == 2) {
+			printf("Following points...\n");
+			trackingMode = 2;
+			userInputAccepted = true;
+		}
+		else {
+			printf("Undefined input, please follow instructions...\n");
+			userInputAccepted = false;
+		}
+	}
+
+	return trackingMode;
+}
+
+void waitForUserStart()
+{
+	// extra logic to wait for user ready
+	printf("Please hit enter to continue...");
+	char input = '0';
+	while (input != '\n') {
+		cin.get(input);
+	}
+}
+
+int retrieveUserPointSelect(int numberOfPoints) {
+	bool userInputAccepted = false;
+	int pointToTrack = 0;
+
+	// continue to query user until correct input accepted
+	while (!userInputAccepted) {
+		printf("You have %d point(s) to choose from, please choose a from 1 - %d!\n", numberOfPoints, numberOfPoints);
+
+		// retrieve user input and check action
+		string userInput;
+		getline(cin, userInput);
+		int value = atoi(userInput.c_str());
+
+		if (value > 0 && value <= numberOfPoints) {
+			printf("Following point %d...\n", value);
+			pointToTrack = value;
+			userInputAccepted = true;
+		}
+		else {
+			printf("Undefined input, please input an actual point number...\n");
+			userInputAccepted = false;
+		}
+	}
+
+	return pointToTrack;
+}
+
 // absolute orientation method adapted from a matlab program (absoluteOrientationQuarternion.m) copyright ETH Zurich, Computer Vision Laboratory, Switzerland
 // http://www.mathworks.com/matlabcentral/fileexchange/22422-absolute-orientation
 mat transformationComputation(vector<double*> aPoints, vector<double*> bPoints)
@@ -174,8 +257,6 @@ mat transformationComputation(vector<double*> aPoints, vector<double*> bPoints)
 // method that handles traveling to points
 void navigateToPoints(mat transMatrix) 
 {
-	int precisionFactor = 1000; // important variable for writing to robot position registers
-
 	time_t now;
 	time_t old;
 	time_t notificationTime;
@@ -185,6 +266,76 @@ void navigateToPoints(mat transMatrix)
 
 	int i = 0;
 	int j = 0;
+
+	vector<double*> points = vector<double*>();
+
+	// retrieve the points that the user selected in Brainsight
+	ifstream filestream("Z:\points.txt");
+	string line;
+	const char delimiter[2] = " ";
+	while (filestream.good())
+	{
+		while (getline(filestream, line))
+		{
+			//
+			double *pointArray;
+			pointArray = (double *)malloc(sizeof(double) * 16);
+			char* charLine = stringToChar(line);
+			int i = 0;
+			char *coordinate = strtok(charLine, delimiter);
+
+			coordinate = strtok(NULL, delimiter);
+			coordinate = strtok(NULL, delimiter);
+
+			while (coordinate != NULL) {
+				pointArray[i] = (double)atof(coordinate);
+				coordinate = strtok(NULL, delimiter);
+				i++;
+			}
+			points.push_back(pointArray);
+		}
+	}
+
+	// print the points for debugging purposes
+	cout << "Printing points:\n";
+	for (i = 0; i < points.size(); i++){
+		printf("Point %d : ", i);
+		for (j = 0; j < 16; j++){
+			if (j == 15) {
+				cout << points.at(i)[j];
+			}
+			else {
+				cout << points.at(i)[j] << ",";
+			}
+		}
+		cout << "\n";
+	}
+
+	// ask the user which point they would like to navigate towards
+	int pointDestination = retrieveUserPointSelect(points.size());
+
+	// place the point in matrix form for easy calculation
+	mat pointInMatrixForm(4, 4);
+	for (i = 0; i < 4; i++) {
+		for (j = 0; j < 4; j++) {
+			pointInMatrixForm(i, j) = points.at(pointDestination)[i * 4 + j];
+		}
+	}
+	pointInMatrixForm.print("PointMatrix:");
+
+	// get the registration matrix for point conversion
+	// TODO: make sure this is secure!
+	mat registrationMatrix(4, 4);
+	for (i = 0; i < 4; i++) {
+		for (j = 0; j < 4; j++) {
+			registrationMatrix(i, j) = brainSightSRMatrix[i * 4 + j];
+		}
+	}
+	registrationMatrix.print("RegistrationMatrix:");
+
+	// this is the actual point we want so we can convert to robot coordinates
+	mat actualCamPoint = registrationMatrix*pointInMatrixForm;
+	actualCamPoint.print("ActualMatrix:");
 }
 
 // method that handles following the ST Tracker
@@ -230,7 +381,6 @@ void navigateToSTTracker(mat transMatrix)
 			// prevents repeated messages appearing on console
 			Sleep(1000);
 		}
-
 
 		// get the st tracker position and move towards it
 		printf("brainSightST:");
@@ -285,62 +435,6 @@ void navigateToSTTracker(mat transMatrix)
 		OPCWrite(charPR2URL, robotDestination, 6);
 		Sleep(1000);
 	}
-}
-
-int retrieveUserInput() 
-{
-	// signal to user that they can use points or follow subject tracker
-	printf("Please indicate whether you want to follow input points or the subject tracker\n");
-	bool userInputAccepted = false;
-	int trackingMode = 0;
-
-	// continue to query user until correct input accepted
-	while (!userInputAccepted) {
-		printf("Enter 1 to follow the subject tracker\n");
-		printf("Or enter 2 to follow points... \n");
-
-		// retrieve user input and check action
-		string userInput;
-		getline(cin, userInput);
-		int value = atoi(userInput.c_str());
-
-		if (value == 1) {
-			printf("Following ST Tracker...\n");
-			trackingMode = 1;
-			userInputAccepted = true;
-		}
-		else if (value == 2) {
-			printf("Following points...\n");
-			trackingMode = 2;
-			userInputAccepted = true;
-		}
-		else {
-			printf("Undefined input, please follow instructions...\n");
-			userInputAccepted = false;
-		}
-	}
-
-	return trackingMode;
-}
-
-void waitForUserStart()
-{
-	// extra logic to wait for user ready
-	printf("Please hit enter to continue...");
-	char input = '0';
-	while (input != '\n') {
-		cin.get(input);
-	}
-}
-
-//Given a string, returns equivalent pointer to char
-char* stringToChar(string str)
-{
-	const char *constCharStr = str.c_str();
-	char *charStr = new char[str.length() + 1];
-	strcpy(charStr, constCharStr);
-	charStr[str.length()] = '\0';
-	return charStr;
 }
 
 //This function parses Brainsight output file for tracker coordinates and updates global variables accordingly given Brainsight log output file path
@@ -695,7 +789,7 @@ int _tmain(int argc, _TCHAR* argv[])
 	waitForUserStart();
 	
 	mat transMatrix = calibrationRoutine();
-	transMatrix.print("transMatrix:"); // printed to display transformation matrix to user
+	transMatrix.print("TransMatrix:"); // printed to display transformation matrix to user
 
 	int trackingMode = retrieveUserInput();
 

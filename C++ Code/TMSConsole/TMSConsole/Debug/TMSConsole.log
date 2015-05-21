@@ -1,7 +1,7 @@
-﻿Build started 5/20/2015 4:34:29 PM.
-     1>Project "C:\Users\amir\Desktop\FanucProject\C++ Code\TMSConsole\TMSConsole\TMSConsole.vcxproj" on node 2 (Build target(s)).
+﻿Build started 5/21/2015 11:59:19 AM.
+     1>Project "C:\Users\amir\Desktop\FanucProject\C++ Code\TMSConsole\TMSConsole\TMSConsole.vcxproj" on node 2 (Rebuild target(s)).
      1>ClCompile:
-         C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\CL.exe /c /I"C:\armadillo-4.650.4\include" /ZI /nologo /W3 /WX- /Od /Oy- /D WIN32 /D _DEBUG /D _CONSOLE /D _LIB /D _UNICODE /D UNICODE /Gm /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Fo"Debug\\" /Fd"Debug\vc120.pdb" /Gd /TP /analyze- /errorReport:prompt TMSConsole.cpp
+         C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\CL.exe /c /I"C:\armadillo-4.650.4\include" /ZI /nologo /W3 /WX- /Od /Oy- /D WIN32 /D _DEBUG /D _CONSOLE /D _LIB /D _UNICODE /D UNICODE /Gm /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Fo"Debug\\" /Fd"Debug\vc120.pdb" /Gd /TP /analyze- /errorReport:prompt stdafx.cpp TMSConsole.cpp
          TMSConsole.cpp
      1>c:\program files (x86)\microsoft visual studio 12.0\vc\include\stdint.h(57): warning C4005: 'INT8_MIN' : macro redefinition
                  c:\program files (x86)\national instruments\labview 2014\cintools\fundtypes.h(291) : see previous definition of 'INT8_MIN'
@@ -27,52 +27,58 @@
                  c:\program files (x86)\national instruments\labview 2014\cintools\fundtypes.h(318) : see previous definition of 'UINT32_MAX'
      1>c:\program files (x86)\microsoft visual studio 12.0\vc\include\stdint.h(68): warning C4005: 'UINT64_MAX' : macro redefinition
                  c:\program files (x86)\national instruments\labview 2014\cintools\fundtypes.h(376) : see previous definition of 'UINT64_MAX'
-     1>c:\users\amir\desktop\fanucproject\c++ code\tmsconsole\tmsconsole\tmsconsole.cpp(179): warning C4996: 'strcpy': This function or variable may be unsafe. Consider using strcpy_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
-                 c:\program files (x86)\microsoft visual studio 12.0\vc\include\string.h(112) : see declaration of 'strcpy'
-     1>c:\users\amir\desktop\fanucproject\c++ code\tmsconsole\tmsconsole\tmsconsole.cpp(237): warning C4996: 'sscanf': This function or variable may be unsafe. Consider using sscanf_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
-                 c:\program files (x86)\microsoft visual studio 12.0\vc\include\stdio.h(304) : see declaration of 'sscanf'
-     1>c:\users\amir\desktop\fanucproject\c++ code\tmsconsole\tmsconsole\tmsconsole.cpp(242): warning C4996: 'sscanf': This function or variable may be unsafe. Consider using sscanf_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
-                 c:\program files (x86)\microsoft visual studio 12.0\vc\include\stdio.h(304) : see declaration of 'sscanf'
-     1>c:\users\amir\desktop\fanucproject\c++ code\tmsconsole\tmsconsole\tmsconsole.cpp(378): warning C4996: 'strtok': This function or variable may be unsafe. Consider using strtok_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
-                 c:\program files (x86)\microsoft visual studio 12.0\vc\include\string.h(204) : see declaration of 'strtok'
-     1>c:\users\amir\desktop\fanucproject\c++ code\tmsconsole\tmsconsole\tmsconsole.cpp(382): warning C4996: 'strtok': This function or variable may be unsafe. Consider using strtok_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
-                 c:\program files (x86)\microsoft visual studio 12.0\vc\include\string.h(204) : see declaration of 'strtok'
-     1>c:\users\amir\desktop\fanucproject\c++ code\tmsconsole\tmsconsole\tmsconsole.cpp(393): warning C4018: '<' : signed/unsigned mismatch
-     1>c:\users\amir\desktop\fanucproject\c++ code\tmsconsole\tmsconsole\tmsconsole.cpp(415): warning C4018: '<' : signed/unsigned mismatch
-     1>c:\users\amir\desktop\fanucproject\c++ code\tmsconsole\tmsconsole\tmsconsole.cpp(452): warning C4996: 'asctime': This function or variable may be unsafe. Consider using asctime_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+     1>c:\users\amir\desktop\fanucproject\c++ code\tmsconsole\tmsconsole\tmsconsole.cpp(180): warning C4101: 'old' : unreferenced local variable
+     1>c:\users\amir\desktop\fanucproject\c++ code\tmsconsole\tmsconsole\tmsconsole.cpp(182): warning C4101: 'arrivalTime' : unreferenced local variable
+     1>c:\users\amir\desktop\fanucproject\c++ code\tmsconsole\tmsconsole\tmsconsole.cpp(181): warning C4101: 'notificationTime' : unreferenced local variable
+     1>c:\users\amir\desktop\fanucproject\c++ code\tmsconsole\tmsconsole\tmsconsole.cpp(184): warning C4101: 'pointArray' : unreferenced local variable
+     1>c:\users\amir\desktop\fanucproject\c++ code\tmsconsole\tmsconsole\tmsconsole.cpp(179): warning C4101: 'now' : unreferenced local variable
+     1>c:\users\amir\desktop\fanucproject\c++ code\tmsconsole\tmsconsole\tmsconsole.cpp(211): warning C4996: 'asctime': This function or variable may be unsafe. Consider using asctime_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
                  c:\program files (x86)\microsoft visual studio 12.0\vc\include\time.h(174) : see declaration of 'asctime'
-     1>c:\users\amir\desktop\fanucproject\c++ code\tmsconsole\tmsconsole\tmsconsole.cpp(452): warning C4996: 'localtime': This function or variable may be unsafe. Consider using localtime_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+     1>c:\users\amir\desktop\fanucproject\c++ code\tmsconsole\tmsconsole\tmsconsole.cpp(211): warning C4996: 'localtime': This function or variable may be unsafe. Consider using localtime_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
                  c:\program files (x86)\microsoft visual studio 12.0\vc\include\time.inl(112) : see declaration of 'localtime'
-     1>c:\users\amir\desktop\fanucproject\c++ code\tmsconsole\tmsconsole\tmsconsole.cpp(454): warning C4996: 'asctime': This function or variable may be unsafe. Consider using asctime_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+     1>c:\users\amir\desktop\fanucproject\c++ code\tmsconsole\tmsconsole\tmsconsole.cpp(212): warning C4996: 'asctime': This function or variable may be unsafe. Consider using asctime_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
                  c:\program files (x86)\microsoft visual studio 12.0\vc\include\time.h(174) : see declaration of 'asctime'
-     1>c:\users\amir\desktop\fanucproject\c++ code\tmsconsole\tmsconsole\tmsconsole.cpp(463): warning C4996: 'asctime': This function or variable may be unsafe. Consider using asctime_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+     1>c:\users\amir\desktop\fanucproject\c++ code\tmsconsole\tmsconsole\tmsconsole.cpp(220): warning C4996: 'asctime': This function or variable may be unsafe. Consider using asctime_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
                  c:\program files (x86)\microsoft visual studio 12.0\vc\include\time.h(174) : see declaration of 'asctime'
-     1>c:\users\amir\desktop\fanucproject\c++ code\tmsconsole\tmsconsole\tmsconsole.cpp(464): warning C4996: 'asctime': This function or variable may be unsafe. Consider using asctime_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+     1>c:\users\amir\desktop\fanucproject\c++ code\tmsconsole\tmsconsole\tmsconsole.cpp(221): warning C4996: 'asctime': This function or variable may be unsafe. Consider using asctime_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
                  c:\program files (x86)\microsoft visual studio 12.0\vc\include\time.h(174) : see declaration of 'asctime'
-     1>c:\users\amir\desktop\fanucproject\c++ code\tmsconsole\tmsconsole\tmsconsole.cpp(490): warning C4018: '<' : signed/unsigned mismatch
-     1>c:\users\amir\desktop\fanucproject\c++ code\tmsconsole\tmsconsole\tmsconsole.cpp(499): warning C4018: '<' : signed/unsigned mismatch
-     1>c:\users\amir\desktop\fanucproject\c++ code\tmsconsole\tmsconsole\tmsconsole.cpp(509): warning C4018: '<' : signed/unsigned mismatch
-     1>c:\users\amir\desktop\fanucproject\c++ code\tmsconsole\tmsconsole\tmsconsole.cpp(351): warning C4101: 'c' : unreferenced local variable
-     1>c:\users\amir\desktop\fanucproject\c++ code\tmsconsole\tmsconsole\tmsconsole.cpp(531): warning C4129: 'c' : unrecognized character escape sequence
-     1>c:\users\amir\desktop\fanucproject\c++ code\tmsconsole\tmsconsole\tmsconsole.cpp(601): warning C4996: 'asctime': This function or variable may be unsafe. Consider using asctime_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+     1>c:\users\amir\desktop\fanucproject\c++ code\tmsconsole\tmsconsole\tmsconsole.cpp(278): warning C4244: '=' : conversion from 'double' to 'int', possible loss of data
+     1>c:\users\amir\desktop\fanucproject\c++ code\tmsconsole\tmsconsole\tmsconsole.cpp(282): warning C4244: '=' : conversion from 'double' to 'int', possible loss of data
+     1>c:\users\amir\desktop\fanucproject\c++ code\tmsconsole\tmsconsole\tmsconsole.cpp(196): warning C4101: 'old' : unreferenced local variable
+     1>c:\users\amir\desktop\fanucproject\c++ code\tmsconsole\tmsconsole\tmsconsole.cpp(195): warning C4101: 'now' : unreferenced local variable
+     1>c:\users\amir\desktop\fanucproject\c++ code\tmsconsole\tmsconsole\tmsconsole.cpp(341): warning C4996: 'strcpy': This function or variable may be unsafe. Consider using strcpy_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+                 c:\program files (x86)\microsoft visual studio 12.0\vc\include\string.h(112) : see declaration of 'strcpy'
+     1>c:\users\amir\desktop\fanucproject\c++ code\tmsconsole\tmsconsole\tmsconsole.cpp(399): warning C4996: 'sscanf': This function or variable may be unsafe. Consider using sscanf_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+                 c:\program files (x86)\microsoft visual studio 12.0\vc\include\stdio.h(304) : see declaration of 'sscanf'
+     1>c:\users\amir\desktop\fanucproject\c++ code\tmsconsole\tmsconsole\tmsconsole.cpp(404): warning C4996: 'sscanf': This function or variable may be unsafe. Consider using sscanf_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+                 c:\program files (x86)\microsoft visual studio 12.0\vc\include\stdio.h(304) : see declaration of 'sscanf'
+     1>c:\users\amir\desktop\fanucproject\c++ code\tmsconsole\tmsconsole\tmsconsole.cpp(540): warning C4996: 'strtok': This function or variable may be unsafe. Consider using strtok_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+                 c:\program files (x86)\microsoft visual studio 12.0\vc\include\string.h(204) : see declaration of 'strtok'
+     1>c:\users\amir\desktop\fanucproject\c++ code\tmsconsole\tmsconsole\tmsconsole.cpp(544): warning C4996: 'strtok': This function or variable may be unsafe. Consider using strtok_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+                 c:\program files (x86)\microsoft visual studio 12.0\vc\include\string.h(204) : see declaration of 'strtok'
+     1>c:\users\amir\desktop\fanucproject\c++ code\tmsconsole\tmsconsole\tmsconsole.cpp(555): warning C4018: '<' : signed/unsigned mismatch
+     1>c:\users\amir\desktop\fanucproject\c++ code\tmsconsole\tmsconsole\tmsconsole.cpp(577): warning C4018: '<' : signed/unsigned mismatch
+     1>c:\users\amir\desktop\fanucproject\c++ code\tmsconsole\tmsconsole\tmsconsole.cpp(614): warning C4996: 'asctime': This function or variable may be unsafe. Consider using asctime_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
                  c:\program files (x86)\microsoft visual studio 12.0\vc\include\time.h(174) : see declaration of 'asctime'
-     1>c:\users\amir\desktop\fanucproject\c++ code\tmsconsole\tmsconsole\tmsconsole.cpp(602): warning C4996: 'asctime': This function or variable may be unsafe. Consider using asctime_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+     1>c:\users\amir\desktop\fanucproject\c++ code\tmsconsole\tmsconsole\tmsconsole.cpp(616): warning C4996: 'asctime': This function or variable may be unsafe. Consider using asctime_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
                  c:\program files (x86)\microsoft visual studio 12.0\vc\include\time.h(174) : see declaration of 'asctime'
-     1>c:\users\amir\desktop\fanucproject\c++ code\tmsconsole\tmsconsole\tmsconsole.cpp(610): warning C4996: 'asctime': This function or variable may be unsafe. Consider using asctime_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+     1>c:\users\amir\desktop\fanucproject\c++ code\tmsconsole\tmsconsole\tmsconsole.cpp(625): warning C4996: 'asctime': This function or variable may be unsafe. Consider using asctime_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
                  c:\program files (x86)\microsoft visual studio 12.0\vc\include\time.h(174) : see declaration of 'asctime'
-     1>c:\users\amir\desktop\fanucproject\c++ code\tmsconsole\tmsconsole\tmsconsole.cpp(611): warning C4996: 'asctime': This function or variable may be unsafe. Consider using asctime_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+     1>c:\users\amir\desktop\fanucproject\c++ code\tmsconsole\tmsconsole\tmsconsole.cpp(626): warning C4996: 'asctime': This function or variable may be unsafe. Consider using asctime_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
                  c:\program files (x86)\microsoft visual studio 12.0\vc\include\time.h(174) : see declaration of 'asctime'
-     1>c:\users\amir\desktop\fanucproject\c++ code\tmsconsole\tmsconsole\tmsconsole.cpp(668): warning C4244: '=' : conversion from 'double' to 'int', possible loss of data
-     1>c:\users\amir\desktop\fanucproject\c++ code\tmsconsole\tmsconsole\tmsconsole.cpp(672): warning C4244: '=' : conversion from 'double' to 'int', possible loss of data
-     1>c:\users\amir\desktop\fanucproject\c++ code\tmsconsole\tmsconsole\tmsconsole.cpp(549): warning C4101: 'old' : unreferenced local variable
-     1>c:\users\amir\desktop\fanucproject\c++ code\tmsconsole\tmsconsole\tmsconsole.cpp(548): warning C4101: 'now' : unreferenced local variable
-     1>c:\users\amir\desktop\fanucproject\c++ code\tmsconsole\tmsconsole\tmsconsole.cpp(543): warning C4101: 'c' : unreferenced local variable
+     1>c:\users\amir\desktop\fanucproject\c++ code\tmsconsole\tmsconsole\tmsconsole.cpp(652): warning C4018: '<' : signed/unsigned mismatch
+     1>c:\users\amir\desktop\fanucproject\c++ code\tmsconsole\tmsconsole\tmsconsole.cpp(661): warning C4018: '<' : signed/unsigned mismatch
+     1>c:\users\amir\desktop\fanucproject\c++ code\tmsconsole\tmsconsole\tmsconsole.cpp(671): warning C4018: '<' : signed/unsigned mismatch
+     1>c:\users\amir\desktop\fanucproject\c++ code\tmsconsole\tmsconsole\tmsconsole.cpp(513): warning C4101: 'c' : unreferenced local variable
+     1>c:\users\amir\desktop\fanucproject\c++ code\tmsconsole\tmsconsole\tmsconsole.cpp(692): warning C4129: 'c' : unrecognized character escape sequence
+         stdafx.cpp
+         Generating Code...
        Link:
          C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\link.exe /ERRORREPORT:PROMPT /OUT:"C:\Users\amir\Desktop\FanucProject\C++ Code\TMSConsole\Debug\TMSConsole.exe" /INCREMENTAL /NOLOGO /LIBPATH:C:\MinGW\bin /LIBPATH:"C:\armadillo-4.650.4\examples\lib_win64" /LIBPATH:"C:\Program Files\MATLAB\R2014b\extern\lib\win64\microsoft" OPCFunctions.lib libblas.lib liblapack.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /DEBUG /PDB:"C:\Users\amir\Desktop\FanucProject\C++ Code\TMSConsole\Debug\TMSConsole.pdb" /SUBSYSTEM:CONSOLE /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"C:\Users\amir\Desktop\FanucProject\C++ Code\TMSConsole\Debug\TMSConsole.lib" /MACHINE:X86 Debug\stdafx.obj
          Debug\TMSConsole.obj
          TMSConsole.vcxproj -> C:\Users\amir\Desktop\FanucProject\C++ Code\TMSConsole\Debug\TMSConsole.exe
-     1>Done Building Project "C:\Users\amir\Desktop\FanucProject\C++ Code\TMSConsole\TMSConsole\TMSConsole.vcxproj" (Build target(s)).
+     1>Done Building Project "C:\Users\amir\Desktop\FanucProject\C++ Code\TMSConsole\TMSConsole\TMSConsole.vcxproj" (Rebuild target(s)).
 
 Build succeeded.
 
-Time Elapsed 00:00:06.18
+Time Elapsed 00:00:06.44

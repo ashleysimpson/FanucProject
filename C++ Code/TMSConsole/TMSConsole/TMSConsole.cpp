@@ -171,6 +171,168 @@ mat transformationComputation(vector<double*> aPoints, vector<double*> bPoints)
 	return transformationMatrix;
 }
 
+// method that handles traveling to points
+void navigateToPoints(mat transMatrix) 
+{
+	int precisionFactor = 1000; // important variable for writing to robot position registers
+
+	time_t now;
+	time_t old;
+	time_t notificationTime;
+	time_t arrivalTime;
+
+	double pointArray[16]; //contains Brainsight Subject Tracker point (4x4 matrix)
+
+	int i = 0;
+	int j = 0;
+}
+
+// method that handles following the ST Tracker
+void navigateToSTTracker(mat transMatrix) 
+{
+	int precisionFactor = 1000; // important variable for writing to robot position registers
+
+	time_t now;
+	time_t old;
+	time_t notificationTime;
+	time_t arrivalTime;
+
+	double pointArray[16]; //contains Brainsight Subject Tracker point (4x4 matrix)
+
+	int i = 0;
+	int j = 0;
+
+	while (true){
+		time(&arrivalTime);
+		printf("Retrieving data: Do not move. \n");
+		//Period at which notifications appear
+		int notificationPeriod = 1;
+		int notificationTimer = notificationPeriod;
+		printf("Arrived to Point at: %s", asctime(localtime(&arrivalTime)));
+		printf("Last Brainsight Update at: %s", asctime(&lastUpdate));
+		while (difftime(arrivalTime, lastUpdateTime) > 0 || STStatus != 1){ //busywait until brainsight data is up to date
+			//while (difftime(arrivalTime, lastUpdateTime) > 0 || CTStatus != 1){ //busywait until brainsight data is up to date
+			time(&notificationTime);
+			//notify user of status of point every 10 seconds
+			if (difftime(notificationTime, arrivalTime) > notificationTimer){
+				if (difftime(arrivalTime, lastUpdateTime) > 0){
+					cout << "Notification: Brainsight still out-of-date.\n";
+					printf("First arrived to Point at: %s", asctime(localtime(&arrivalTime)));
+					printf("Last Brainsight Update at: %s", asctime(&lastUpdate));
+				}
+				if (STStatus != 1){
+					//if (CTStatus != 1){
+					cout << "Notification: Subject Tracker is in failed status. Please assure fiducial array is visible to Polaris.\n";
+				}
+				notificationTimer = notificationTimer + notificationPeriod;
+			}
+
+			// prevents repeated messages appearing on console
+			Sleep(1000);
+		}
+
+
+		// get the st tracker position and move towards it
+		printf("brainSightST:");
+		m.lock();
+		for (j = 0; j < 16; j++){
+			pointArray[j] = brainSightST[j];
+			printf("%f ", brainSightST[j]);
+		}
+
+		m.unlock();
+		printf("Brainsight data up-to-date and Subject Tracker Camera Point retrieved. \n");
+
+		//create vectors for each path point
+
+		mat pointMatrix(4, 4);
+		for (i = 0; i < 4; i++){
+			for (j = 0; j < 4; j++){
+				pointMatrix(i, j) = pointArray[(i)* 4 + (j)];
+			}
+		}
+
+		transMatrix.print("transMatrix");
+		pointMatrix.print("pointMatrix");
+
+		mat result = transMatrix*pointMatrix;
+		vec resultVector(3);
+		vec resultOrientation(3);
+		resultVector << result(0, 3) << result(1, 3) << result(2, 3) << endr;
+
+		if (result(2, 1) > 0.998){
+			resultOrientation << 0 << atan2(result(2, 0), result(2, 2)) * 180 / M_PI << 90 << endr;
+		}
+		else if (result(2, 1) < -0.998){
+			resultOrientation << 0 << atan2(result(2, 0), result(2, 2)) * 180 / M_PI << -90 << endr;
+		}
+		else{
+			resultOrientation << atan2(-result(1, 2), result(1, 1)) * 180 / M_PI << atan2(-result(2, 0), result(0, 0)) * 180 / M_PI << asin(result(1, 0)) * 180 / M_PI << endr;
+		}
+
+		result.print("result:");
+		resultOrientation.print("resultOrientation:");
+		//int robotDestination[6] = { 0, 0, 0, 45, -86, 131 };
+		int robotDestination[6] = { 0, 0, 0, 0, 0, 0 };
+		for (i = 0; i < 3; i++){
+			robotDestination[i] = resultVector(i) * precisionFactor;
+		}
+
+		for (i = 3; i < 6; i++){
+			robotDestination[i] = resultOrientation(i - 3) * precisionFactor;
+		}
+
+		OPCWrite(charPR2URL, robotDestination, 6);
+		Sleep(1000);
+	}
+}
+
+int retrieveUserInput() 
+{
+	// signal to user that they can use points or follow subject tracker
+	printf("Please indicate whether you want to follow input points or the subject tracker\n");
+	bool userInputAccepted = false;
+	int trackingMode = 0;
+
+	// continue to query user until correct input accepted
+	while (!userInputAccepted) {
+		printf("Enter 1 to follow the subject tracker\n");
+		printf("Or enter 2 to follow points... \n");
+
+		// retrieve user input and check action
+		string userInput;
+		getline(cin, userInput);
+		int value = atoi(userInput.c_str());
+
+		if (value == 1) {
+			printf("Following ST Tracker...\n");
+			trackingMode = 1;
+			userInputAccepted = true;
+		}
+		else if (value == 2) {
+			printf("Following points...\n");
+			trackingMode = 2;
+			userInputAccepted = true;
+		}
+		else {
+			printf("Undefined input, please follow instructions...\n");
+			userInputAccepted = false;
+		}
+	}
+
+	return trackingMode;
+}
+
+void waitForUserStart()
+{
+	// extra logic to wait for user ready
+	printf("Please hit enter to continue...");
+	char input = '0';
+	while (input != '\n') {
+		cin.get(input);
+	}
+}
+
 //Given a string, returns equivalent pointer to char
 char* stringToChar(string str)
 {
@@ -524,156 +686,27 @@ int _tmain(int argc, _TCHAR* argv[])
 	string CurPosURL("opc://localhost/National Instruments.NIOPCServers/Robotchan.GELPC.$CurPos");
 	charCurPosURL = stringToChar(CurPosURL);
 	charPR2URL = stringToChar(PR2URL);
-	int precisionFactor = 1000; // important variable for writing to robot position registers
 
+	// start threads for reading brainsight information
 	thread ReadOPCThread(ReadOPC, charCurPosURL, dataToRead, dataLength);
-	//thread parseBrainsight(parseBrainsight, "C:\\Users\\Ashley\\Desktop\\cameradata.txt");
 	thread parseBrainsight(parseBrainsight, "Z:\cameradata.txt");
 	cout << "Initializing OPCRead threads and Brainsight parsing threads...\n";
-	
-	// extra logic to wait for user ready
-	printf("Please hit enter to continue...");
-	char input = '0';
-	while (input != '\n') {
-		cin.get(input);
-	}
 
-	int i = 0;
-	int j = 0;
-	char c;
+	waitForUserStart();
 	
-	// transformation matrix calculation
 	mat transMatrix = calibrationRoutine();
+	transMatrix.print("transMatrix:"); // printed to display transformation matrix to user
 
-	time_t now;
-	time_t old;
-	time_t notificationTime;
-	time_t arrivalTime;
+	int trackingMode = retrieveUserInput();
 
-	//getchar();
-	transMatrix.print("transMatrix:");
-
-	// signal to user that they can use points or follow subject tracker
-	printf("Please indicate whether you want to follow input points or the subject tracker\n");
-	bool userInputAccepted = false;
-	int trackingMode = 0;
-
-	// continue to query user until correct input accepted
-	while (!userInputAccepted) {
-		printf("Enter 1 to follow the subject tracker\n");
-		printf("Or enter 2 to follow points... \n");
-
-		// retrieve user input and check action
-		string userInput;
-		getline(cin, userInput);
-		int value = atoi(userInput.c_str());
-
-		if (value == 1) {
-			printf("Following ST Tracker...\n");
-			trackingMode = 1;
-			userInputAccepted = true;
-		}
-		else if (value == 2) {
-			printf("Following points...\n");
-			trackingMode = 2;
-			userInputAccepted = true;
-		}
-		else {
-			printf("Undefined input, please follow instructions...\n");
-			userInputAccepted = false;
-		}
-	}
-
-	// TODO: point following not fully implemented
+	// choose the method of tracking based on user input
 	if (trackingMode == 2) {
-		printf("Point following not implemented!");
-		return 1;
+		printf("Following input points!\n");
+		navigateToPoints(transMatrix);
 	}
-
-	double pointArray[16]; //contains Brainsight Subject Tracker point (4x4 matrix)
-
-	while (true){
-		time(&arrivalTime);
-		printf("Retrieving data: Do not move. \n");
-		//Period at which notifications appear
-		int notificationPeriod = 1;
-		int notificationTimer = notificationPeriod;
-		printf("Arrived to Point at: %s", asctime(localtime(&arrivalTime)));
-		printf("Last Brainsight Update at: %s", asctime(&lastUpdate));
-		while (difftime(arrivalTime, lastUpdateTime) > 0 || STStatus != 1){ //busywait until brainsight data is up to date
-		//while (difftime(arrivalTime, lastUpdateTime) > 0 || CTStatus != 1){ //busywait until brainsight data is up to date
-			time(&notificationTime);
-			//notify user of status of point every 10 seconds
-			if (difftime(notificationTime, arrivalTime) > notificationTimer){
-				if (difftime(arrivalTime, lastUpdateTime) > 0){
-					cout << "Notification: Brainsight still out-of-date.\n";
-					printf("First arrived to Point at: %s", asctime(localtime(&arrivalTime)));
-					printf("Last Brainsight Update at: %s", asctime(&lastUpdate));
-				}
-				if (STStatus != 1){
-				//if (CTStatus != 1){
-					cout << "Notification: Subject Tracker is in failed status. Please assure fiducial array is visible to Polaris.\n";
-				}
-				notificationTimer = notificationTimer + notificationPeriod;
-			}
-
-			// prevents repeated messages appearing on console
-			Sleep(1000);
-		}
-
-		
-		// get the st tracker position and move towards it
-		printf("brainSightST:");
-		m.lock();
-		for (j = 0; j < 16; j++){
-			pointArray[j] = brainSightST[j];
-			printf("%f ", brainSightST[j]);
-		}
-	
-		m.unlock();
-		printf("Brainsight data up-to-date and Subject Tracker Camera Point retrieved. \n");
-
-		//create vectors for each path point
-
-		mat pointMatrix(4, 4);
-		for (i = 0; i < 4; i++){
-			for (j = 0; j < 4; j++){
-				pointMatrix(i, j) = pointArray[(i)*4 + (j)];
-			}
-		}
-
-		transMatrix.print("transMatrix");
-		pointMatrix.print("pointMatrix");
-
-		mat result = transMatrix*pointMatrix;
-		vec resultVector(3);
-		vec resultOrientation(3);
-		resultVector << result(0,3) << result(1,3) << result(2,3) << endr;
-		
-		if (result(2,1) > 0.998){
-			resultOrientation << 0 << atan2(result(2, 0), result(2, 2)) * 180 / M_PI << 90 << endr;
-		}
-		else if (result(2,1) < -0.998){
-			resultOrientation << 0 << atan2(result(2, 0), result(2, 2)) * 180 / M_PI << -90 << endr;
-		}
-		else{
-			resultOrientation << atan2(-result(1, 2), result(1, 1)) * 180 / M_PI << atan2(-result(2, 0), result(0, 0)) * 180 / M_PI << asin(result(1, 0)) * 180 / M_PI << endr;
-		}
-		
-		result.print("result:");
-		resultOrientation.print("resultOrientation:");
-		//int robotDestination[6] = { 0, 0, 0, 45, -86, 131 };
-		int robotDestination[6] = { 0, 0, 0, 0, 0, 0 };
-		for (i = 0; i < 3; i++){
-			robotDestination[i] = resultVector(i) * precisionFactor;
-		}
-		
-		for (i = 3; i < 6; i++){
-			robotDestination[i] = resultOrientation(i-3) * precisionFactor;
-		}
-
-		OPCWrite(charPR2URL, robotDestination, 6);
-		Sleep(1000);
+	else {
+		printf("Following ST Tracker!\n");
+		navigateToSTTracker(transMatrix);
 	}
 
 	getchar();

@@ -107,7 +107,8 @@ void waitForUserStart()
 	}
 }
 
-int retrieveUserPointSelect(int numberOfPoints) {
+int retrieveUserPointSelect(int numberOfPoints) 
+{
 	bool userInputAccepted = false;
 	int pointToTrack = 0;
 
@@ -132,6 +133,42 @@ int retrieveUserPointSelect(int numberOfPoints) {
 	}
 
 	return pointToTrack;
+}
+
+// method that moves robot based on point matrix
+void moveRobotTowardsLocation(mat result) 
+{
+	int precisionFactor = 1000;
+	vec resultVector(3);
+	vec resultOrientation(3);
+	int i = 0;
+
+	resultVector << result(0, 3) << result(1, 3) << result(2, 3) << endr;
+
+	if (result(2, 1) > 0.998){
+		resultOrientation << 0 << atan2(result(2, 0), result(2, 2)) * 180 / M_PI << 90 << endr;
+	}
+	else if (result(2, 1) < -0.998){
+		resultOrientation << 0 << atan2(result(2, 0), result(2, 2)) * 180 / M_PI << -90 << endr;
+	}
+	else{
+		resultOrientation << atan2(-result(1, 2), result(1, 1)) * 180 / M_PI << atan2(-result(2, 0), result(0, 0)) * 180 / M_PI << asin(result(1, 0)) * 180 / M_PI << endr;
+	}
+
+	result.print("result:");
+	resultOrientation.print("resultOrientation:");
+	//int robotDestination[6] = { 0, 0, 0, 45, -86, 131 };
+	int robotDestination[6] = { 0, 0, 0, 0, 0, 0 };
+	for (i = 0; i < 3; i++){
+		robotDestination[i] = resultVector(i) * precisionFactor;
+	}
+
+	for (i = 3; i < 6; i++){
+		robotDestination[i] = resultOrientation(i - 3) * precisionFactor;
+	}
+
+	OPCWrite(charPR2URL, robotDestination, 6);
+	Sleep(1000);
 }
 
 // absolute orientation method adapted from a matlab program (absoluteOrientationQuarternion.m) copyright ETH Zurich, Computer Vision Laboratory, Switzerland
@@ -254,7 +291,7 @@ mat transformationComputation(vector<double*> aPoints, vector<double*> bPoints)
 	return transformationMatrix;
 }
 
-// method that handles traveling to points
+// method that handles traveling to points, this is static at the moment, also know avoidance
 void navigateToPoints(mat transMatrix) 
 {
 	time_t now;
@@ -269,80 +306,87 @@ void navigateToPoints(mat transMatrix)
 
 	vector<double*> points = vector<double*>();
 
-	// retrieve the points that the user selected in Brainsight
-	ifstream filestream("Z:\points.txt");
-	string line;
-	const char delimiter[2] = " ";
-	while (filestream.good())
-	{
-		while (getline(filestream, line))
+	while (true) {
+		
+		// retrieve the points that the user selected in Brainsight
+		ifstream filestream("Z:\points.txt");
+		string line;
+		const char delimiter[2] = " ";
+		while (filestream.good())
 		{
-			//
-			double *pointArray;
-			pointArray = (double *)malloc(sizeof(double) * 16);
-			char* charLine = stringToChar(line);
-			int i = 0;
-			char *coordinate = strtok(charLine, delimiter);
+			while (getline(filestream, line))
+			{
+				double *pointArray;
+				pointArray = (double *)malloc(sizeof(double) * 16);
+				char* charLine = stringToChar(line);
+				int i = 0;
+				char *coordinate = strtok(charLine, delimiter);
 
-			coordinate = strtok(NULL, delimiter);
-			coordinate = strtok(NULL, delimiter);
-
-			while (coordinate != NULL) {
-				pointArray[i] = (double)atof(coordinate);
 				coordinate = strtok(NULL, delimiter);
-				i++;
-			}
-			points.push_back(pointArray);
-		}
-	}
+				coordinate = strtok(NULL, delimiter);
 
-	// print the points for debugging purposes
-	cout << "Printing points:\n";
-	for (i = 0; i < points.size(); i++){
-		printf("Point %d : ", i);
-		for (j = 0; j < 16; j++){
-			if (j == 15) {
-				cout << points.at(i)[j];
-			}
-			else {
-				cout << points.at(i)[j] << ",";
+				while (coordinate != NULL) {
+					pointArray[i] = (double)atof(coordinate);
+					coordinate = strtok(NULL, delimiter);
+					i++;
+				}
+				points.push_back(pointArray);
 			}
 		}
-		cout << "\n";
-	}
 
-	// ask the user which point they would like to navigate towards
-	int pointDestination = retrieveUserPointSelect(points.size());
-
-	// place the point in matrix form for easy calculation
-	mat pointInMatrixForm(4, 4);
-	for (i = 0; i < 4; i++) {
-		for (j = 0; j < 4; j++) {
-			pointInMatrixForm(i, j) = points.at(pointDestination)[i * 4 + j];
+		// print the points for debugging purposes
+		cout << "Printing points:\n";
+		for (i = 0; i < points.size(); i++){
+			printf("Point %d : ", i);
+			for (j = 0; j < 16; j++){
+				if (j == 15) {
+					cout << points.at(i)[j];
+				}
+				else {
+					cout << points.at(i)[j] << ",";
+				}
+			}
+			cout << "\n";
 		}
-	}
-	pointInMatrixForm.print("PointMatrix:");
 
-	// get the registration matrix for point conversion
-	// TODO: make sure this is secure!
-	mat registrationMatrix(4, 4);
-	for (i = 0; i < 4; i++) {
-		for (j = 0; j < 4; j++) {
-			registrationMatrix(i, j) = brainSightSRMatrix[i * 4 + j];
+		// ask the user which point they would like to navigate towards
+		int pointDestination = retrieveUserPointSelect(points.size());
+
+		// place the point in matrix form for easy calculation
+		mat pointInMatrixForm(4, 4);
+		for (i = 0; i < 4; i++) {
+			for (j = 0; j < 4; j++) {
+				pointInMatrixForm(i, j) = points.at(pointDestination)[i * 4 + j];
+			}
 		}
-	}
-	registrationMatrix.print("RegistrationMatrix:");
+		pointInMatrixForm.print("PointMatrix:");
 
-	// this is the actual point we want so we can convert to robot coordinates
-	mat actualCamPoint = registrationMatrix*pointInMatrixForm;
-	actualCamPoint.print("ActualMatrix:");
+		// get the registration matrix for point conversion
+		// TODO: make sure this is secure!
+		m.lock();
+		mat registrationMatrix(4, 4);
+		for (i = 0; i < 4; i++) {
+			for (j = 0; j < 4; j++) {
+				registrationMatrix(i, j) = brainSightSRMatrix[i * 4 + j];
+			}
+		}
+		registrationMatrix.print("RegistrationMatrix:");
+		m.unlock();
+
+		// this is the actual point we want so we can convert to robot coordinates
+		mat actualCamPoint = registrationMatrix*pointInMatrixForm;
+		actualCamPoint.print("ActualMatrix:");
+
+		// caluculate the point in robotic space
+		mat result = transMatrix*actualCamPoint;
+
+		moveRobotTowardsLocation(result);
+	}
 }
 
 // method that handles following the ST Tracker
 void navigateToSTTracker(mat transMatrix) 
 {
-	int precisionFactor = 1000; // important variable for writing to robot position registers
-
 	time_t now;
 	time_t old;
 	time_t notificationTime;
@@ -401,39 +445,12 @@ void navigateToSTTracker(mat transMatrix)
 				pointMatrix(i, j) = pointArray[(i)* 4 + (j)];
 			}
 		}
-
 		transMatrix.print("transMatrix");
 		pointMatrix.print("pointMatrix");
 
 		mat result = transMatrix*pointMatrix;
-		vec resultVector(3);
-		vec resultOrientation(3);
-		resultVector << result(0, 3) << result(1, 3) << result(2, 3) << endr;
 
-		if (result(2, 1) > 0.998){
-			resultOrientation << 0 << atan2(result(2, 0), result(2, 2)) * 180 / M_PI << 90 << endr;
-		}
-		else if (result(2, 1) < -0.998){
-			resultOrientation << 0 << atan2(result(2, 0), result(2, 2)) * 180 / M_PI << -90 << endr;
-		}
-		else{
-			resultOrientation << atan2(-result(1, 2), result(1, 1)) * 180 / M_PI << atan2(-result(2, 0), result(0, 0)) * 180 / M_PI << asin(result(1, 0)) * 180 / M_PI << endr;
-		}
-
-		result.print("result:");
-		resultOrientation.print("resultOrientation:");
-		//int robotDestination[6] = { 0, 0, 0, 45, -86, 131 };
-		int robotDestination[6] = { 0, 0, 0, 0, 0, 0 };
-		for (i = 0; i < 3; i++){
-			robotDestination[i] = resultVector(i) * precisionFactor;
-		}
-
-		for (i = 3; i < 6; i++){
-			robotDestination[i] = resultOrientation(i - 3) * precisionFactor;
-		}
-
-		OPCWrite(charPR2URL, robotDestination, 6);
-		Sleep(1000);
+		moveRobotTowardsLocation(result);
 	}
 }
 

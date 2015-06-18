@@ -114,7 +114,7 @@ int retrieveUserPointSelect(int numberOfPoints)
 
 	// continue to query user until correct input accepted
 	while (!userInputAccepted) {
-		printf("You have %d point(s) to choose from, please choose a from 1 - %d!\n", numberOfPoints, numberOfPoints);
+		printf("You have %d point(s) to choose from, please choose a from 0 - %d!\n", numberOfPoints, numberOfPoints - 1);
 
 		// retrieve user input and check action
 		string userInput;
@@ -306,33 +306,33 @@ void navigateToPoints(mat transMatrix)
 
 	vector<double*> points = vector<double*>();
 
-	while (true) {
-		
-		// retrieve the points that the user selected in Brainsight
-		ifstream filestream("Z:\points.txt");
-		string line;
-		const char delimiter[2] = " ";
-		while (filestream.good())
+	// retrieve the points that the user selected in Brainsight
+	ifstream filestream("Z:\points.txt");
+	string line;
+	const char delimiter[2] = " ";
+	while (filestream.good())
+	{
+		while (getline(filestream, line))
 		{
-			while (getline(filestream, line))
-			{
-				double *pointArray;
-				pointArray = (double *)malloc(sizeof(double) * 16);
-				char* charLine = stringToChar(line);
-				int i = 0;
-				char *coordinate = strtok(charLine, delimiter);
+			double *pointArray;
+			pointArray = (double *)malloc(sizeof(double) * 16);
+			char* charLine = stringToChar(line);
+			int i = 0;
+			char *coordinate = strtok(charLine, delimiter);
 
-				coordinate = strtok(NULL, delimiter);
-				coordinate = strtok(NULL, delimiter);
+			coordinate = strtok(NULL, delimiter);
+			coordinate = strtok(NULL, delimiter);
 
-				while (coordinate != NULL) {
-					pointArray[i] = (double)atof(coordinate);
-					coordinate = strtok(NULL, delimiter);
-					i++;
-				}
-				points.push_back(pointArray);
+			while (coordinate != NULL) {
+				pointArray[i] = (double)atof(coordinate);
+				coordinate = strtok(NULL, delimiter);
+				i++;
 			}
+			points.push_back(pointArray);
 		}
+	}
+
+	while (true) {
 
 		// print the points for debugging purposes
 		cout << "Printing points:\n";
